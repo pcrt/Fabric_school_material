@@ -20,7 +20,6 @@ if [ ! -d "channel-artifacts" ]; then
 fi
 
 createChannelTx() {
-
 	set -x
 	configtxgen -profile ${PROFILE_TX} -outputCreateChannelTx ./channel-artifacts/${CHANNEL_NAME}.tx -channelID $CHANNEL_NAME
 	res=$?
@@ -30,12 +29,10 @@ createChannelTx() {
 		exit 1
 	fi
 	echo
-
 }
 
 createAncorPeerTx() {
-
-	for orgmsp in Org1MSP Org2MSP; do
+	for orgmsp in Org1MSP Org2MSP Org3MSP; do
 
 	echo "#######    Generating anchor peer update for ${orgmsp}  ##########"
 	set -x
@@ -60,14 +57,14 @@ createChannel() {
 		sleep $DELAY
 		if [ -z "$CORE_PEER_TLS_ENABLED" -o "$CORE_PEER_TLS_ENABLED" = "false" ]; then
         set -x
-				peer channel create -o localhost:7050 -c $CHANNEL_NAME -f ./channel-artifacts/${CHANNEL_NAME}.tx --outputBlock ./channel-artifacts/${CHANNEL_NAME}.block >&log.txt
-				res=$?
+		peer channel create -o localhost:7050 -c $CHANNEL_NAME -f ./channel-artifacts/${CHANNEL_NAME}.tx --outputBlock ./channel-artifacts/${CHANNEL_NAME}.block >&log.txt
+		res=$?
         set +x
 		else
-				set -x
-				peer channel create -o localhost:7050 -c $CHANNEL_NAME --ordererTLSHostnameOverride orderer.example.com -f ./channel-artifacts/${CHANNEL_NAME}.tx --outputBlock ./channel-artifacts/${CHANNEL_NAME}.block --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA >&log.txt
-				res=$?
-				set +x
+		set -x
+		peer channel create -o localhost:7050 -c $CHANNEL_NAME --ordererTLSHostnameOverride orderer.example.com -f ./channel-artifacts/${CHANNEL_NAME}.tx --outputBlock ./channel-artifacts/${CHANNEL_NAME}.block --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA >&log.txt
+		res=$?
+		set +x
 		fi
 		let rc=$res
 		COUNTER=$(expr $COUNTER + 1)
@@ -81,8 +78,8 @@ createChannel() {
 
 # queryCommitted ORG
 joinChannel() {
-  ORG=$1
-  setGlobals $ORG
+    ORG=$1
+    setGlobals $ORG
 	local rc=1
 	local COUNTER=1
 	## Sometimes Join takes time, hence retry
@@ -92,8 +89,8 @@ joinChannel() {
     peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block >&log.txt
     res=$?
     set +x
-		let rc=$res
-		COUNTER=$(expr $COUNTER + 1)
+	let rc=$res
+	COUNTER=$(expr $COUNTER + 1)
 	done
 	cat log.txt
 	echo
@@ -151,12 +148,16 @@ echo "Join Org1 peers to the channel..."
 joinChannel 1
 echo "Join Org2 peers to the channel..."
 joinChannel 2
+echo "Join Org3 peers to the channel..."
+joinChannel 3
 
 ## Set the anchor peers for each org in the channel
 echo "Updating anchor peers for org1..."
 updateAnchorPeers 1
 echo "Updating anchor peers for org2..."
 updateAnchorPeers 2
+echo "Updating anchor peers for org3..."
+updateAnchorPeers 3
 
 echo
 echo "========= Channel successfully joined =========== "

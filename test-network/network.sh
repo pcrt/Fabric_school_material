@@ -242,8 +242,7 @@ function createConsortium() {
   # Note: For some unknown reason (at least for now) the block file can't be
   # named orderer.genesis.block or the orderer will fail to launch!
   set -x
-# configtxgen -profile TwoOrgsOrdererGenesis -channelID system-channel -outputBlock ./system-genesis-block/genesis.block
-  configtxgen -profile ThreeOrgsOrdererGenesis -channelID system-channel -outputBlock ./system-genesis-block/genesis.block
+  configtxgen -profile $PROFILE_GN -channelID system-channel -outputBlock ./system-genesis-block/genesis.block
   res=$?
   set +x
   if [ $res -ne 0 ]; then
@@ -281,9 +280,7 @@ function networkUp() {
 
 ## call the script to join create the channel and join the peers of org1 and org2
 function createChannel() {
-
-## Bring up the network if it is not arleady up.
-
+  ## Bring up the network if it is not arleady up
   if [ ! -d "organizations/peerOrganizations" ]; then
     echo "Bringing up network"
     networkUp
@@ -293,7 +290,7 @@ function createChannel() {
   # more to create the channel creation transaction and the anchor peer updates.
   # configtx.yaml is mounted in the cli container, which allows us to use it to
   # create the channel artifacts
- scripts/createChannel.sh $CHANNEL_NAME $CLI_DELAY $MAX_RETRY $VERBOSE
+ scripts/createChannel.sh $CHANNEL_NAME $PROFILE_TX $CLI_DELAY $MAX_RETRY $VERBOSE
   if [ $? -ne 0 ]; then
     echo "Error !!! Create channel failed"
     exit 1
@@ -336,6 +333,10 @@ VERSION=1
 IMAGETAG="latest"
 # default database
 DATABASE="leveldb"
+# orderer genesis block profile
+PROFILE_GN="ThreeOrgsOrdererGenesis"
+# channel profile: 3 orgs profiles
+PROFILE_TX="ThreeOrgsChannel" 
 
 # Parse commandline args
 
