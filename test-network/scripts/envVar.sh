@@ -7,16 +7,16 @@
 # This is a collection of bash functions used by different scripts
 
 export CORE_PEER_TLS_ENABLED=true
-export ORDERER_CA=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
-export PEER0_ORG1_CA=${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
-export PEER0_ORG2_CA=${PWD}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
-export PEER0_ORG3_CA=${PWD}/organizations/peerOrganizations/org3.example.com/peers/peer0.org3.example.com/tls/ca.crt
+export ORDERER_CA=${PWD}/organizations/ordererOrganizations/shopping.com/orderers/orderer.shopping.com/msp/tlscacerts/tlsca.shopping.com-cert.pem
+export PEER0_ORG1_CA=${PWD}/organizations/peerOrganizations/customer.shopping.com/peers/peer0.customer.shopping.com/tls/ca.crt
+export PEER0_ORG2_CA=${PWD}/organizations/peerOrganizations/shop.shopping.com/peers/peer0.shop.shopping.com/tls/ca.crt
+export PEER0_ORG3_CA=${PWD}/organizations/peerOrganizations/producer.shopping.com/peers/peer0.producer.shopping.com/tls/ca.crt
 
 # Set OrdererOrg.Admin globals
 setOrdererGlobals() {
   export CORE_PEER_LOCALMSPID="OrdererMSP"
-  export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
-  export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/ordererOrganizations/example.com/users/Admin@example.com/msp
+  export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/organizations/ordererOrganizations/shopping.com/orderers/orderer.shopping.com/msp/tlscacerts/tlsca.shopping.com-cert.pem
+  export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/ordererOrganizations/shopping.com/users/Admin@shopping.com/msp
 }
 
 # Set environment variables for the peer org
@@ -29,19 +29,19 @@ setGlobals() {
   fi
   echo "Using organization ${USING_ORG}"
   if [ $USING_ORG -eq 1 ]; then
-    export CORE_PEER_LOCALMSPID="Org1MSP"
+    export CORE_PEER_LOCALMSPID="CustomerMSP"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG1_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/customer.shopping.com/users/Admin@customer.shopping.com/msp
     export CORE_PEER_ADDRESS=localhost:7051
   elif [ $USING_ORG -eq 2 ]; then
-    export CORE_PEER_LOCALMSPID="Org2MSP"
+    export CORE_PEER_LOCALMSPID="ShopMSP"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG2_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/shop.shopping.com/users/Admin@shop.shopping.com/msp
     export CORE_PEER_ADDRESS=localhost:9051
   elif [ $USING_ORG -eq 3 ]; then
-    export CORE_PEER_LOCALMSPID="Org3MSP"
+    export CORE_PEER_LOCALMSPID="ProducerMSP"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG3_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org3.example.com/users/Admin@org3.example.com/msp
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/producer.shopping.com/users/Admin@producer.shopping.com/msp
     export CORE_PEER_ADDRESS=localhost:11051
   else
     echo "================== ERROR !!! ORG Unknown =================="
@@ -52,6 +52,9 @@ setGlobals() {
   fi
 }
 
+# ===================================================================================================
+# TODO REFACTORING FOR DEPLOY
+# ===================================================================================================
 # parsePeerConnectionParameters $@
 # Helper function that takes the parameters from a chaincode operation
 # (e.g. invoke, query, instantiate) and checks for an even number of
@@ -76,6 +79,7 @@ parsePeerConnectionParameters() {
   # remove leading space for output
   PEERS="$(echo -e "$PEERS" | sed -e 's/^[[:space:]]*//')"
 }
+# ===================================================================================================
 
 verifyResult() {
   if [ $1 -ne 0 ]; then

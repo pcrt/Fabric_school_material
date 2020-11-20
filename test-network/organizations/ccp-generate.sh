@@ -31,7 +31,7 @@ function yaml_ccp {
 ORG="customer.shopping.com"
 P0PORT=7051
 CAPORT=7054
-ORGNAME="Customer"
+ORGNAME="CustomerMSP"
 PEERPEM=organizations/peerOrganizations/${ORG}/tlsca/tlsca.${ORG}-cert.pem
 CAPEM=organizations/peerOrganizations/${ORG}/ca/ca.${ORG}-cert.pem
 
@@ -41,7 +41,7 @@ echo "$(yaml_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM $ORGNAME)" > organizations
 ORG="shop.shopping.com"
 P0PORT=9051
 CAPORT=8054
-ORGNAME="Shop"
+ORGNAME="ShopMSP"
 PEERPEM=organizations/peerOrganizations/${ORG}/tlsca/tlsca.${ORG}-cert.pem
 CAPEM=organizations/peerOrganizations/${ORG}/ca/ca.${ORG}-cert.pem
 
@@ -51,7 +51,7 @@ echo "$(yaml_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM $ORGNAME)" > organizations
 ORG="producer.shopping.com"
 P0PORT=11051
 CAPORT=11054
-ORGNAME="Producer"
+ORGNAME="ProducerMSP"
 PEERPEM=organizations/peerOrganizations/${ORG}/tlsca/tlsca.${ORG}-cert.pem
 CAPEM=organizations/peerOrganizations/${ORG}/ca/ca.${ORG}-cert.pem
 
