@@ -13,3 +13,5 @@
 /bin
 /config
 .DS_Store
+/chaincode/node_modules
+/test-network/samplecontract.tar.gz

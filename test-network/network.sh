@@ -32,6 +32,7 @@ function printHelp() {
   echo "    -d <delay> - delay duration in seconds (defaults to 3)"
   echo "    -l <language> - the programming language of the chaincode to deploy: go (default), java, javascript, typescript"
   echo "    -v <version>  - chaincode version. Must be a round number, 1, 2, 3, etc"
+  echo "    -s <sequence>  - chaincode sequence. Must be a round number, 1, 2, 3, etc"
   echo "    -i <imagetag> - the tag to be used to launch the network (defaults to \"latest\")"
   echo "    -verbose - verbose mode"
   echo "  network.sh -h (print this message)"
@@ -42,8 +43,6 @@ function printHelp() {
   echo "  network.sh createChannel -c -r -d -verbose"
   echo "  network.sh deployCC -l -v -r -d -verbose"
   echo
-  echo " Taking all defaults:"
-  echo "	network.sh up"
   echo
   echo " Examples:"
   echo "  network.sh up createChannel -c mychannel -i 2.0.0"
@@ -300,7 +299,8 @@ function createChannel() {
 
 ## Call the script to isntall and instantiate a chaincode on the channel
 function deployCC() {
-  scripts/deployCC.sh $CHANNEL_NAME $CC_SRC_LANGUAGE $VERSION $CLI_DELAY $MAX_RETRY $VERBOSE
+
+  scripts/deploy.sh $CHANNEL_NAME $CC_NAME $CC_SRC_PATH $CC_SRC_LANGUAGE $VERSION $CC_SEQUENCE $CC_INIT_FCN
 
   if [ $? -ne 0 ]; then
     echo "ERROR !!! Deploying chaincode failed"
@@ -322,6 +322,14 @@ MAX_RETRY=5
 CLI_DELAY=3
 # channel name defaults to "mychannel"
 CHANNEL_NAME="mychannel"
+# chaincode name
+CC_NAME="samplecontract"
+# chaincode path
+CC_SRC_PATH="../chaincode/"
+# chaincode sequence
+CC_SEQUENCE="1"
+# chaincode init
+CC_INIT_FCN="initLedger"
 # use this as the default docker-compose yaml definition
 COMPOSE_FILE_BASE=docker/docker-compose-test-net.yaml
 #
@@ -385,6 +393,10 @@ while [[ $# -ge 1 ]] ; do
     ;;
   -v )
     VERSION="$2"
+    shift
+    ;;
+  -s )
+    CC_SEQUENCE="$2"
     shift
     ;;
   -i )

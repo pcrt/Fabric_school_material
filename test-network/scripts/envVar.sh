@@ -29,16 +29,19 @@ setGlobals() {
   fi
   echo "Using organization ${USING_ORG}"
   if [ $USING_ORG -eq 1 ]; then
+    export ORG_DOM="customer.shopping.com"
     export CORE_PEER_LOCALMSPID="CustomerMSP"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG1_CA
     export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/customer.shopping.com/users/Admin@customer.shopping.com/msp
     export CORE_PEER_ADDRESS=localhost:7051
   elif [ $USING_ORG -eq 2 ]; then
+    export ORG_DOM="shop.shopping.com"
     export CORE_PEER_LOCALMSPID="ShopMSP"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG2_CA
     export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/shop.shopping.com/users/Admin@shop.shopping.com/msp
     export CORE_PEER_ADDRESS=localhost:9051
   elif [ $USING_ORG -eq 3 ]; then
+    export ORG_DOM="producer.shopping.com"
     export CORE_PEER_LOCALMSPID="ProducerMSP"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG3_CA
     export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/producer.shopping.com/users/Admin@producer.shopping.com/msp
@@ -66,7 +69,7 @@ parsePeerConnectionParameters() {
   PEERS=""
   while [ "$#" -gt 0 ]; do
     setGlobals $1
-    PEER="peer0.org$1"
+    PEER="peer0.${ORG_DOM}"
     PEERS="$PEERS $PEER"
     PEER_CONN_PARMS="$PEER_CONN_PARMS --peerAddresses $CORE_PEER_ADDRESS"
     if [ -z "$CORE_PEER_TLS_ENABLED" -o "$CORE_PEER_TLS_ENABLED" = "true" ]; then
