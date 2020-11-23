@@ -2,9 +2,9 @@
 
 source scripts/utils.sh
 
-CHANNEL_NAME=${1:-"mychannel"}
-CC_NAME=${2:-"basic"}
-CC_SRC_PATH=${3:-"../chaincode/"}
+CHANNEL_NAME=${1:-"shoppingchannel"}
+CC_NAME=${2:-"producer"}
+CC_SRC_PATH=${3:-"../chaincodes"}
 CC_SRC_LANGUAGE=${4:-"javascript"}
 CC_VERSION=${5:-"1.0"}
 CC_SEQUENCE=${6:-"1"}
@@ -14,6 +14,9 @@ CC_COLL_CONFIG=${9:-"NA"}
 DELAY=${10:-"3"}
 MAX_RETRY=${11:-"5"}
 VERBOSE=${12:-"false"}
+
+# Chaincode path for the specific smartcontract
+CC_SRC_PATH=$CC_SRC_PATH/$CC_NAME
 
 println "executing with the following"
 println "- CHANNEL_NAME: ${C_GREEN}${CHANNEL_NAME}${C_RESET}"

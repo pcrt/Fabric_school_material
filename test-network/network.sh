@@ -27,10 +27,11 @@ function printHelp() {
   echo "      - 'deployCC' - deploy the choreography chaincode on the channel"
   echo
   echo "    Flags:"
-  echo "    -c <channel name> - channel name to use (defaults to \"mychannel\")"
+  echo "    -c <channel name> - channel name to use (defaults to \"shoppingchannel\")"
+  echo "    -n <contract name> - contract name to use (defaults to \"producer\")"
   echo "    -r <max retry> - CLI times out after certain number of attempts (defaults to 5)"
   echo "    -d <delay> - delay duration in seconds (defaults to 3)"
-  echo "    -l <language> - the programming language of the chaincode to deploy: go (default), java, javascript, typescript"
+  echo "    -l <language> - the programming language of the chaincode to deploy: javascript (default), typescript"
   echo "    -v <version>  - chaincode version. Must be a round number, 1, 2, 3, etc"
   echo "    -s <sequence>  - chaincode sequence. Must be a round number, 1, 2, 3, etc"
   echo "    -i <imagetag> - the tag to be used to launch the network (defaults to \"latest\")"
@@ -38,16 +39,16 @@ function printHelp() {
   echo "  network.sh -h (print this message)"
   echo
   echo " Possible Mode and flags"
-  echo "  network.sh up -c -r -d -i -verbose"
+  echo "  network.sh up"
   echo "  network.sh up createChannel -c -r -d -i -verbose"
   echo "  network.sh createChannel -c -r -d -verbose"
-  echo "  network.sh deployCC -l -v -r -d -verbose"
+  echo "  network.sh deployCC -c -n -l -v -r -d -verbose"
   echo
   echo
   echo " Examples:"
-  echo "  network.sh up createChannel -c mychannel -i 2.0.0"
+  echo "  network.sh up createChannel"
   echo "  network.sh createChannel -c channelName"
-  echo "  network.sh deployCC -l javascript"
+  echo "  network.sh deployCC -n contractName -c channelName"
 }
 
 # Versions of fabric known not to work with the test network
@@ -320,12 +321,12 @@ CRYPTO="cryptogen"
 MAX_RETRY=5
 # default for delay between commands
 CLI_DELAY=3
-# channel name defaults to "mychannel"
-CHANNEL_NAME="mychannel"
+# channel name defaults to "shoppingchannel"
+CHANNEL_NAME="shoppingchannel"
 # chaincode name
-CC_NAME="samplecontract"
+CC_NAME="producer"
 # chaincode path
-CC_SRC_PATH="../chaincode/"
+CC_SRC_PATH="../chaincodes"
 # chaincode sequence
 CC_SEQUENCE="1"
 # chaincode init
@@ -377,6 +378,10 @@ while [[ $# -ge 1 ]] ; do
     ;;
   -c )
     CHANNEL_NAME="$2"
+    shift
+    ;;
+  -n )
+    CC_NAME="$2"
     shift
     ;;
   -r )

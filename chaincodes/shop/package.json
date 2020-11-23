@@ -1,7 +1,7 @@
 {
-  "name": "chaincode",
+  "name": "shopchaincode",
   "version": "1.0.0",
-  "description": "Chaincode Fabric Winter School",
+  "description": "Chaincode Fabric Winter School (Shop)",
   "main": "index.js",
   "scripts": {
     "lint": "eslint .",
