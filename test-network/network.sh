@@ -28,7 +28,7 @@ function printHelp() {
   echo
   echo "    Flags:"
   echo "    -c <channel name> - channel name to use (defaults to \"shoppingchannel\")"
-  echo "    -n <contract name> - contract name to use (defaults to \"producer\")"
+  echo "    -n <chaincode name> - chaincode name to use (defaults to \"producer\")"
   echo "    -r <max retry> - CLI times out after certain number of attempts (defaults to 5)"
   echo "    -d <delay> - delay duration in seconds (defaults to 3)"
   echo "    -l <language> - the programming language of the chaincode to deploy: javascript (default), typescript"
@@ -48,7 +48,7 @@ function printHelp() {
   echo " Examples:"
   echo "  network.sh up createChannel"
   echo "  network.sh createChannel -c channelName"
-  echo "  network.sh deployCC -n contractName -c channelName"
+  echo "  network.sh deployCC -n chaincodeName -c channelName"
 }
 
 # Versions of fabric known not to work with the test network
