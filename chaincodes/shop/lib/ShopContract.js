@@ -10,34 +10,34 @@ class ShopContract extends Contract {
 		const stock = [
             {
                 ID: 'product1',
-                Type: 'Shoe',
+                Type: 'Shoes',
                 Quantity: 20,
-                Price: 150,
+                Price: 150
             },
             {
                 ID: 'product2',
                 Type: 'T-shirt',
                 Quantity: 15,
-                Price: 40,
+                Price: 40
             },
             {
                 ID: 'product3',
                 Type: 'Jeans',
                 Quantity: 10,
-                Price: 60,
+                Price: 60
             },
             {
                 ID: 'product4',
                 Type: 'Hat',
                 Quantity: 5,
-                Price: 25,
+                Price: 25
             },
             {
                 ID: 'product5',
                 Type: 'Gloves',
                 Quantity: 0,
-                Price: 10,
-            },
+                Price: 10
+            }
         ]
 
         for (const product of stock) {
