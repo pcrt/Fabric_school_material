@@ -8,9 +8,8 @@ class ProducerContract extends Contract {
         console.info('============= PRODUCER CONTRACT INIT METHOD CALL ===========')
         console.info('============= START : Initialize Ledger ===========')
 
-        const products = [
-            {
-                /* product ledger state */
+        /*const products = [
+            {s
                 docType: 'product',
                 name: 'suitcase',
                 model: 'Horizone',
@@ -32,7 +31,7 @@ class ProducerContract extends Contract {
             const productKey = 'PROD' + i
             await ctx.stub.putState(productKey, Buffer.from(JSON.stringify(products[i])))
             console.info('Added <--> ', products[i])
-        }
+        }*/
         console.info('============= END : Initialize Ledger ===========')
     }
 
