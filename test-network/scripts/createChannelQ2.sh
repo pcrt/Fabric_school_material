@@ -1,16 +1,11 @@
 #!/bin/bash
 
 
-CHANNEL_NAME="$1"
-PROFILE_TX="$2" ## The profile specified in configtx.yaml
-DELAY="$3"
-MAX_RETRY="$4"
-VERBOSE="$5"
-: ${CHANNEL_NAME:="quotationchannel"}
-: ${PROFILE_TX:="ThreeOrgsChannel"}
-: ${DELAY:="3"}
-: ${MAX_RETRY:="5"}
-: ${VERBOSE:="false"}
+CHANNEL_NAME="quotationchannel2"
+PROFILE_TX="Q2Channel"
+DELAY="3"
+MAX_RETRY="5"
+VERBOSE="false"
 
 # import utils
 . scripts/envVar.sh
@@ -32,7 +27,7 @@ createChannelTx() {
 }
 
 createAncorPeerTx() {
-	for orgmsp in SupplierAMSP SupplierBMSP AgencyMSP; do
+	for orgmsp in SupplierBMSP AgencyMSP; do
 
 	echo "#######    Generating anchor peer update for ${orgmsp}  ##########"
 	set -x
@@ -48,7 +43,7 @@ createAncorPeerTx() {
 }
 
 createChannel() {
-	setGlobals 1
+	setGlobals 3
 
 	# Poll in case the raft leader is not set yet
 	local rc=1
@@ -144,16 +139,12 @@ echo "Creating channel "$CHANNEL_NAME
 createChannel
 
 ## Join all the peers to the channel
-echo "Join Org1 peers to the channel..."
-joinChannel 1
-echo "Join Org2 peers to the channel..."
+echo "Join Org2 (SupplierB) peers to the channel..."
 joinChannel 2
-echo "Join Org3 peers to the channel..."
+echo "Join Org3 (Agency) peers to the channel..."
 joinChannel 3
 
 ## Set the anchor peers for each org in the channel
-echo "Updating anchor peers for org1..."
-updateAnchorPeers 1
 echo "Updating anchor peers for org2..."
 updateAnchorPeers 2
 echo "Updating anchor peers for org3..."

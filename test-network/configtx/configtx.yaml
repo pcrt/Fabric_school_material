@@ -339,7 +339,7 @@ Channel: &ChannelDefaults
 ################################################################################
 Profiles:
 
-    Q1OrdererGenesis:
+    TwoConsOrdererGenesis:
         <<: *ChannelDefaults
         Orderer:
             <<: *OrdererDefaults
@@ -352,16 +352,6 @@ Profiles:
                 Organizations:
                     - *SupplierA
                     - *Agency
-    
-    Q2OrdererGenesis:
-        <<: *ChannelDefaults
-        Orderer:
-            <<: *OrdererDefaults
-            Organizations:
-                - *OrdererOrg
-            Capabilities:
-                <<: *OrdererCapabilities
-        Consortiums:
             Q2Consortium:
                 Organizations:
                     - *SupplierB

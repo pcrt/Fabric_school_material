@@ -22,8 +22,8 @@ function printHelp() {
   echo "  network.sh <Mode> [Flags]"
   echo "    <Mode>"
   echo "      - 'up' - bring up fabric orderer and peer nodes. No channel is created"
-  echo "      - 'up createChannel' - bring up fabric network with one channel"
-  echo "      - 'createChannel' - create and join a channel after the network is created"
+  echo "      - 'up createChannels' - bring up fabric network with two channels (quotationchannel1 and quotationchannel2)"
+  echo "      - 'createChannels' - create and join to the channels (quotationchannel1 and quotationchannel2) after the network is created"
   echo "      - 'deployCC' - deploy the choreography chaincode on the channel"
   echo
   echo "    Flags:"
@@ -34,21 +34,20 @@ function printHelp() {
   echo "    -l <language> - the programming language of the chaincode to deploy: javascript (default), typescript"
   echo "    -v <version>  - chaincode version. Must be a round number, 1, 2, 3, etc"
   echo "    -s <sequence>  - chaincode sequence. Must be a round number, 1, 2, 3, etc"
-  echo "    -i <imagetag> - the tag to be used to launch the network (defaults to \"latest\")"
   echo "    -verbose - verbose mode"
   echo "  network.sh -h (print this message)"
   echo
   echo " Possible Mode and flags"
   echo "  network.sh up"
-  echo "  network.sh up createChannel -c -r -d -i -verbose"
-  echo "  network.sh createChannel -c -r -d -verbose"
+  echo "  network.sh up createChannels"
+  echo "  network.sh createChannels"
   echo "  network.sh deployCC -c -n -l -v -r -d -verbose"
   echo
   echo
   echo " Examples:"
-  echo "  network.sh up createChannel"
-  echo "  network.sh createChannel -c channelName"
-  echo "  network.sh deployCC -n chaincodeName -c channelName"
+  echo "  network.sh up createChannels"
+  echo "  network.sh createChannels"
+  echo "  network.sh deployCC -n chaincodeName"
 }
 
 # Versions of fabric known not to work with the test network
@@ -237,9 +236,9 @@ function createConsortium() {
     exit 1
   fi
 
-  echo "#########  Generating Orderer Genesis block for Quotation1 consortium ##############"
+  echo "#######  Generating Orderer Genesis block for two consortiums: Q1Consortium (SupplierA - Agency) and Q2Consortium (SupplierB - Agency) #######"
   
-  local PROFILE_GN="Q1OrdererGenesis"
+  local PROFILE_GN="TwoConsOrdererGenesis"
   set -x
   configtxgen -profile $PROFILE_GN -channelID system-channel -outputBlock ./system-genesis-block/genesis.block
   res=$?
@@ -248,19 +247,6 @@ function createConsortium() {
     echo "Failed to generate Quotation1 orderer genesis block..."
     exit 1
   fi
-
-  echo "#########  Generating Orderer Genesis block for Quotation2 consortium ##############"
-
-  PROFILE_GN="Q2OrdererGenesis"
-  set -x
-  configtxgen -profile $PROFILE_GN -channelID system-channel -outputBlock ./system-genesis-block/genesis.block
-  res=$?
-  set +x
-  if [ $res -ne 0 ]; then
-    echo "Failed to generate Quotation2 orderer genesis block..."
-    exit 1
-  fi
-
 }
 
 # After we create the org crypto material and the system channel genesis block,
@@ -291,18 +277,20 @@ function networkUp() {
 }
 
 ## call the script to join create the channel and join the peers of org1 and org2
-function createChannel() {
+function createChannels() {
   ## Bring up the network if it is not arleady up
   if [ ! -d "organizations/peerOrganizations" ]; then
     echo "Bringing up network"
     networkUp
   fi
 
-  # now run the script that creates a channel. This script uses configtxgen once
-  # more to create the channel creation transaction and the anchor peer updates.
-  # configtx.yaml is mounted in the cli container, which allows us to use it to
-  # create the channel artifacts
- scripts/createChannel.sh $CHANNEL_NAME $PROFILE_TX $CLI_DELAY $MAX_RETRY $VERBOSE
+  scripts/createChannelQ1.sh
+  if [ $? -ne 0 ]; then
+    echo "Error !!! Create channel failed"
+    exit 1
+  fi
+
+  scripts/createChannelQ2.sh
   if [ $? -ne 0 ]; then
     echo "Error !!! Create channel failed"
     exit 1
@@ -334,7 +322,7 @@ MAX_RETRY=5
 # default for delay between commands
 CLI_DELAY=3
 # channel name defaults to "quotationchannel"
-CHANNEL_NAME="quotationchannel"
+CHANNEL_NAME="quotationchannel1"
 # chaincode name
 CC_NAME="quotation"
 # chaincode path
@@ -354,8 +342,6 @@ VERSION=1
 IMAGETAG="latest"
 # default database
 DATABASE="leveldb"
-# channel profile: 3 orgs profiles
-PROFILE_TX="ThreeOrgsChannel" 
 
 # Parse commandline args
 
@@ -368,11 +354,11 @@ else
   shift
 fi
 
-# parse a createChannel subcommand if used
+# parse a createChannels subcommand if used
 if [[ $# -ge 1 ]] ; then
   key="$1"
-  if [[ "$key" == "createChannel" ]]; then
-      export MODE="createChannel"
+  if [[ "$key" == "createChannels" ]]; then
+      export MODE="createChannels"
       shift
   fi
 fi
@@ -414,10 +400,6 @@ while [[ $# -ge 1 ]] ; do
     CC_SEQUENCE="$2"
     shift
     ;;
-  -i )
-    IMAGETAG=$(go env GOARCH)"-""$2"
-    shift
-    ;;
   -verbose )
     VERBOSE=true
     shift
@@ -444,10 +426,10 @@ fi
 if [ "$MODE" == "up" ]; then
   echo "Starting nodes with CLI timeout of '${MAX_RETRY}' tries and CLI delay of '${CLI_DELAY}' seconds and using database '${DATABASE}' ${CRYPTO_MODE}"
   echo
-elif [ "$MODE" == "createChannel" ]; then
-  echo "Creating channel '${CHANNEL_NAME}'."
+elif [ "$MODE" == "createChannels" ]; then
+  echo "Creating channels 'quotationchannel1' and 'quotationchannel2'."
   echo
-  echo "If network is not up, starting nodes with CLI timeout of '${MAX_RETRY}' tries and CLI delay of '${CLI_DELAY}' seconds and using database '${DATABASE} ${CRYPTO_MODE}"
+  echo "CLI timeout of '${MAX_RETRY}' tries and CLI delay of '${CLI_DELAY}' seconds and using database '${DATABASE} ${CRYPTO_MODE}"
   echo
 elif [ "$MODE" == "deployCC" ]; then
   echo "deploying chaincode on channel '${CHANNEL_NAME}'"
@@ -459,8 +441,8 @@ fi
 
 if [ "${MODE}" == "up" ]; then
   networkUp
-elif [ "${MODE}" == "createChannel" ]; then
-  createChannel
+elif [ "${MODE}" == "createChannels" ]; then
+  createChannels
 elif [ "${MODE}" == "deployCC" ]; then
   deployCC
 else
