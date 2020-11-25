@@ -60,35 +60,25 @@ class ShopContract extends Contract {
 	
 	// If the product is available the user will buy it, updating it in the shopâ€™s stock.
 	async buyProduct(ctx, id, quantity) {
-		const productToBuy = await ctx.stub.getState(id)
-		const check = await this.checkAvailability(quantity)
-		if(!check) {
+        let productToBuy = await ctx.stub.getState(id)
+
+		// Checks if the amount required by the customer is available in the stock
+		if(!(productToBuy.Quantity - quantity >= 0)) {
 			throw new Error(`The product ${id} is not available`)
-		}
-		const updatedProduct = {
-			ID: productToBuy.ID,
-            Type: productToBuy.Type,
-            Quantity: productToBuy.Quantity - quantity,
-            Price: productToBuy.Price,
-		}
-        return ctx.stub.putState(id, Buffer.from(JSON.stringify(updatedProduct)))
+        }
+        
+        productToBuy.Quantity -= quantity
+
+        return ctx.stub.putState(id, Buffer.from(JSON.stringify(productToBuy)))
     }
-	
-	// Checks if the amount required by the customer is available in the stock
-	async checkAvailability(productToBuy, requiredQuantity){
-		return productToBuy.Quantity - requiredQuantity >= 0
-	}
 	
 	// The user will return back the acquired product, updating the stock adding the refunded quantity
 	async refundProduct(ctx, id, quantity) {
-		const productToBuy = await ctx.stub.getState(id)
-		const updatedProduct = {
-			ID: productToBuy.ID,
-            Type: productToBuy.Type,
-            Quantity: productToBuy.Quantity + quantity,
-            Price: productToBuy.Price,
-		}
-        return ctx.stub.putState(id, Buffer.from(JSON.stringify(updatedProduct)))
+        let productToBuy = await ctx.stub.getState(id)
+        
+        productToBuy.Quantity += quantity 
+
+        return ctx.stub.putState(id, Buffer.from(JSON.stringify(productToBuy)))
     }
 }
 

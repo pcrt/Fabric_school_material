@@ -18,7 +18,11 @@ class ProducerContract extends Contract {
         console.info(`Producer ${producer.ID} initialized`)
     }
 
-    async makeQuotation(ctx, requiredType, quantity) {
+    async getWorldState(ctx) {
+        return await ctx.stub.getState('producer1')
+    }
+
+    async requestQuotation(ctx, requiredType, quantity) {
         const producer = await ctx.stub.getState('producer1')
         const productType = await this.checkAvailability(requiredType, producer.Types) 
         if(!productType) {
@@ -31,25 +35,19 @@ class ProducerContract extends Contract {
 
     // By the shop
     async buyStock(ctx, productID, quantity) {
-
         // submitter identity = shop
-        // collection private (producer - shop)
+        // collection private (producer - shop
         const producer = await ctx.stub.getState('producer1')
-        const productToBuy = await ctx.stub.getState(productID)
-
-        const productType = await this.checkAvailability(productToBuy.Type, producer.Types) 
+        let productToBuy = await ctx.stub.getState(productID)
+        const productType = await this.checkAvailability(productToBuy.Type, producer.Types)
         if(!productType) {
             throw new Error(`The producer ${producer.ID} has not this product type`) 
         }
         
-        const updatedProduct = {
-			ID: productToBuy.ID,
-            Type: productToBuy.Type,
-            Quantity: productToBuy.Quantity + quantity,
-            Price: productToBuy.Price,
-		}
-        await ctx.stub.putState(productToBuy.ID, Buffer.from(JSON.stringify(updatedProduct)))
-        return updatedProduct
+        productToBuy.Quantity += quantity,
+
+        await ctx.stub.putState(productToBuy.ID, Buffer.from(JSON.stringify(productToBuy)))
+        return productToBuy
     }
 
     checkAvailability(requiredType, types) {
