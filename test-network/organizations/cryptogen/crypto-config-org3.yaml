@@ -10,8 +10,8 @@ PeerOrgs:
   # ---------------------------------------------------------------------------
   # Org3
   # ---------------------------------------------------------------------------
-  - Name: Producer
-    Domain: producer.shopping.com
+  - Name: Agency
+    Domain: agency.quotation.com
     EnableNodeOUs: true
     Template:
       Count: 1

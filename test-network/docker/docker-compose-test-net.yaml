@@ -6,18 +6,18 @@
 version: '2'
 
 volumes:
-  orderer.shopping.com:
-  peer0.customer.shopping.com:
-  peer0.shop.shopping.com:
-  peer0.producer.shopping.com:
+  orderer.quotation.com:
+  peer0.suppliera.quotation.com:
+  peer0.supplierb.quotation.com:
+  peer0.agency.quotation.com:
 
 networks:
-  shopping:
+  quotation:
 
 services:
 
-  orderer.shopping.com:
-    container_name: orderer.shopping.com
+  orderer.quotation.com:
+    container_name: orderer.quotation.com
     image: hyperledger/fabric-orderer:$IMAGE_TAG
     environment:
       - FABRIC_LOGGING_SPEC=INFO
@@ -41,16 +41,16 @@ services:
     command: orderer
     volumes:
         - ../system-genesis-block/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
-        - ../organizations/ordererOrganizations/shopping.com/orderers/orderer.shopping.com/msp:/var/hyperledger/orderer/msp
-        - ../organizations/ordererOrganizations/shopping.com/orderers/orderer.shopping.com/tls/:/var/hyperledger/orderer/tls
-        - orderer.shopping.com:/var/hyperledger/production/orderer
+        - ../organizations/ordererOrganizations/quotation.com/orderers/orderer.quotation.com/msp:/var/hyperledger/orderer/msp
+        - ../organizations/ordererOrganizations/quotation.com/orderers/orderer.quotation.com/tls/:/var/hyperledger/orderer/tls
+        - orderer.quotation.com:/var/hyperledger/production/orderer
     ports:
       - 7050:7050
     networks:
-      - shopping
+      - quotation
 
-  peer0.customer.shopping.com:
-    container_name: peer0.customer.shopping.com
+  peer0.suppliera.quotation.com:
+    container_name: peer0.suppliera.quotation.com
     image: hyperledger/fabric-peer:$IMAGE_TAG
     environment:
       #Generic peer variables
@@ -58,7 +58,7 @@ services:
       # the following setting starts chaincode containers on the same
       # bridge network as the peers
       # https://docs.docker.com/compose/networking/
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_shopping
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_quotation
       - FABRIC_LOGGING_SPEC=INFO
       #- FABRIC_LOGGING_SPEC=DEBUG
       - CORE_PEER_TLS_ENABLED=true
@@ -69,28 +69,28 @@ services:
       - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
       - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
       # Peer specific variabes
-      - CORE_PEER_ID=peer0.customer.shopping.com
-      - CORE_PEER_ADDRESS=peer0.customer.shopping.com:7051
+      - CORE_PEER_ID=peer0.suppliera.quotation.com
+      - CORE_PEER_ADDRESS=peer0.suppliera.quotation.com:7051
       - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
-      - CORE_PEER_CHAINCODEADDRESS=peer0.customer.shopping.com:7052
+      - CORE_PEER_CHAINCODEADDRESS=peer0.suppliera.quotation.com:7052
       - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.customer.shopping.com:7051
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.customer.shopping.com:7051
-      - CORE_PEER_LOCALMSPID=CustomerMSP
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.suppliera.quotation.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.suppliera.quotation.com:7051
+      - CORE_PEER_LOCALMSPID=SupplierAMSP
     volumes:
         - /var/run/:/host/var/run/
-        - ../organizations/peerOrganizations/customer.shopping.com/peers/peer0.customer.shopping.com/msp:/etc/hyperledger/fabric/msp
-        - ../organizations/peerOrganizations/customer.shopping.com/peers/peer0.customer.shopping.com/tls:/etc/hyperledger/fabric/tls
-        - peer0.customer.shopping.com:/var/hyperledger/production
+        - ../organizations/peerOrganizations/suppliera.quotation.com/peers/peer0.suppliera.quotation.com/msp:/etc/hyperledger/fabric/msp
+        - ../organizations/peerOrganizations/suppliera.quotation.com/peers/peer0.suppliera.quotation.com/tls:/etc/hyperledger/fabric/tls
+        - peer0.suppliera.quotation.com:/var/hyperledger/production
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
     command: peer node start
     ports:
       - 7051:7051
     networks:
-      - shopping
+      - quotation
 
-  peer0.shop.shopping.com:
-    container_name: peer0.shop.shopping.com
+  peer0.supplierb.quotation.com:
+    container_name: peer0.supplierb.quotation.com
     image: hyperledger/fabric-peer:$IMAGE_TAG
     environment:
       #Generic peer variables
@@ -98,7 +98,7 @@ services:
       # the following setting starts chaincode containers on the same
       # bridge network as the peers
       # https://docs.docker.com/compose/networking/
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_shopping
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_quotation
       - FABRIC_LOGGING_SPEC=INFO
       #- FABRIC_LOGGING_SPEC=DEBUG
       - CORE_PEER_TLS_ENABLED=true
@@ -109,28 +109,28 @@ services:
       - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
       - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
       # Peer specific variabes
-      - CORE_PEER_ID=peer0.shop.shopping.com
-      - CORE_PEER_ADDRESS=peer0.shop.shopping.com:9051
+      - CORE_PEER_ID=peer0.supplierb.quotation.com
+      - CORE_PEER_ADDRESS=peer0.supplierb.quotation.com:9051
       - CORE_PEER_LISTENADDRESS=0.0.0.0:9051
-      - CORE_PEER_CHAINCODEADDRESS=peer0.shop.shopping.com:9052
+      - CORE_PEER_CHAINCODEADDRESS=peer0.supplierb.quotation.com:9052
       - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:9052
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.shop.shopping.com:9051
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.shop.shopping.com:9051
-      - CORE_PEER_LOCALMSPID=ShopMSP
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.supplierb.quotation.com:9051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.supplierb.quotation.com:9051
+      - CORE_PEER_LOCALMSPID=SupplierBMSP
     volumes:
         - /var/run/:/host/var/run/
-        - ../organizations/peerOrganizations/shop.shopping.com/peers/peer0.shop.shopping.com/msp:/etc/hyperledger/fabric/msp
-        - ../organizations/peerOrganizations/shop.shopping.com/peers/peer0.shop.shopping.com/tls:/etc/hyperledger/fabric/tls
-        - peer0.shop.shopping.com:/var/hyperledger/production
+        - ../organizations/peerOrganizations/supplierb.quotation.com/peers/peer0.supplierb.quotation.com/msp:/etc/hyperledger/fabric/msp
+        - ../organizations/peerOrganizations/supplierb.quotation.com/peers/peer0.supplierb.quotation.com/tls:/etc/hyperledger/fabric/tls
+        - peer0.supplierb.quotation.com:/var/hyperledger/production
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
     command: peer node start
     ports:
       - 9051:9051
     networks:
-      - shopping
+      - quotation
 
-  peer0.producer.shopping.com:
-    container_name: peer0.producer.shopping.com
+  peer0.agency.quotation.com:
+    container_name: peer0.agency.quotation.com
     image: hyperledger/fabric-peer:$IMAGE_TAG
     environment:
       #Generic peer variables
@@ -138,7 +138,7 @@ services:
       # the following setting starts chaincode containers on the same
       # bridge network as the peers
       # https://docs.docker.com/compose/networking/
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_shopping
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_quotation
       - FABRIC_LOGGING_SPEC=INFO
       #- FABRIC_LOGGING_SPEC=DEBUG
       - CORE_PEER_TLS_ENABLED=true
@@ -149,25 +149,25 @@ services:
       - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
       - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
       # Peer specific variabes
-      - CORE_PEER_ID=peer0.producer.shopping.com
-      - CORE_PEER_ADDRESS=peer0.producer.shopping.com:11051
+      - CORE_PEER_ID=peer0.agency.quotation.com
+      - CORE_PEER_ADDRESS=peer0.agency.quotation.com:11051
       - CORE_PEER_LISTENADDRESS=0.0.0.0:11051
-      - CORE_PEER_CHAINCODEADDRESS=peer0.producer.shopping.com:11052
+      - CORE_PEER_CHAINCODEADDRESS=peer0.agency.quotation.com:11052
       - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:11052
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.producer.shopping.com:11051
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.producer.shopping.com:11051
-      - CORE_PEER_LOCALMSPID=ProducerMSP
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.agency.quotation.com:11051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.agency.quotation.com:11051
+      - CORE_PEER_LOCALMSPID=AgencyMSP
     volumes:
         - /var/run/:/host/var/run/
-        - ../organizations/peerOrganizations/producer.shopping.com/peers/peer0.producer.shopping.com/msp:/etc/hyperledger/fabric/msp
-        - ../organizations/peerOrganizations/producer.shopping.com/peers/peer0.producer.shopping.com/tls:/etc/hyperledger/fabric/tls
-        - peer0.producer.shopping.com:/var/hyperledger/production
+        - ../organizations/peerOrganizations/agency.quotation.com/peers/peer0.agency.quotation.com/msp:/etc/hyperledger/fabric/msp
+        - ../organizations/peerOrganizations/agency.quotation.com/peers/peer0.agency.quotation.com/tls:/etc/hyperledger/fabric/tls
+        - peer0.agency.quotation.com:/var/hyperledger/production
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
     command: peer node start
     ports:
       - 11051:11051
     networks:
-      - shopping
+      - quotation
 
   cli:
     container_name: cli
@@ -180,13 +180,13 @@ services:
       #- FABRIC_LOGGING_SPEC=DEBUG
       - FABRIC_LOGGING_SPEC=INFO
       - CORE_PEER_ID=cli
-      - CORE_PEER_ADDRESS=peer0.customer.shopping.com:7051
-      - CORE_PEER_LOCALMSPID=CustomerMSP
+      - CORE_PEER_ADDRESS=peer0.suppliera.quotation.com:7051
+      - CORE_PEER_LOCALMSPID=SupplierAMSP
       - CORE_PEER_TLS_ENABLED=true
-      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/customer.shopping.com/peers/peer0.customer.shopping.com/tls/server.crt
-      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/customer.shopping.com/peers/peer0.customer.shopping.com/tls/server.key
-      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/customer.shopping.com/peers/peer0.customer.shopping.com/tls/ca.crt
-      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/customer.shopping.com/users/Admin@customer.shopping.com/msp
+      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/suppliera.quotation.com/peers/peer0.suppliera.quotation.com/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/suppliera.quotation.com/peers/peer0.suppliera.quotation.com/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/suppliera.quotation.com/peers/peer0.suppliera.quotation.com/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/suppliera.quotation.com/users/Admin@suppliera.quotation.com/msp
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
     command: /bin/bash
     volumes:
@@ -196,9 +196,9 @@ services:
         - ../scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/
         - ../channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
     depends_on:
-      - orderer.shopping.com
-      - peer0.customer.shopping.com
-      - peer0.shop.shopping.com
-      - peer0.producer.shopping.com
+      - orderer.quotation.com
+      - peer0.suppliera.quotation.com
+      - peer0.supplierb.quotation.com
+      - peer0.agency.quotation.com
     networks:
-      - shopping
+      - quotation

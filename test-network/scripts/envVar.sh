@@ -7,16 +7,16 @@
 # This is a collection of bash functions used by different scripts
 
 export CORE_PEER_TLS_ENABLED=true
-export ORDERER_CA=${PWD}/organizations/ordererOrganizations/shopping.com/orderers/orderer.shopping.com/msp/tlscacerts/tlsca.shopping.com-cert.pem
-export PEER0_ORG1_CA=${PWD}/organizations/peerOrganizations/customer.shopping.com/peers/peer0.customer.shopping.com/tls/ca.crt
-export PEER0_ORG2_CA=${PWD}/organizations/peerOrganizations/shop.shopping.com/peers/peer0.shop.shopping.com/tls/ca.crt
-export PEER0_ORG3_CA=${PWD}/organizations/peerOrganizations/producer.shopping.com/peers/peer0.producer.shopping.com/tls/ca.crt
+export ORDERER_CA=${PWD}/organizations/ordererOrganizations/quotation.com/orderers/orderer.quotation.com/msp/tlscacerts/tlsca.quotation.com-cert.pem
+export PEER0_ORG1_CA=${PWD}/organizations/peerOrganizations/suppliera.quotation.com/peers/peer0.suppliera.quotation.com/tls/ca.crt
+export PEER0_ORG2_CA=${PWD}/organizations/peerOrganizations/supplierb.quotation.com/peers/peer0.supplierb.quotation.com/tls/ca.crt
+export PEER0_ORG3_CA=${PWD}/organizations/peerOrganizations/agency.quotation.com/peers/peer0.agency.quotation.com/tls/ca.crt
 
 # Set OrdererOrg.Admin globals
 setOrdererGlobals() {
   export CORE_PEER_LOCALMSPID="OrdererMSP"
-  export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/organizations/ordererOrganizations/shopping.com/orderers/orderer.shopping.com/msp/tlscacerts/tlsca.shopping.com-cert.pem
-  export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/ordererOrganizations/shopping.com/users/Admin@shopping.com/msp
+  export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/organizations/ordererOrganizations/quotation.com/orderers/orderer.quotation.com/msp/tlscacerts/tlsca.quotation.com-cert.pem
+  export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/ordererOrganizations/quotation.com/users/Admin@quotation.com/msp
 }
 
 # Set environment variables for the peer org
@@ -29,22 +29,22 @@ setGlobals() {
   fi
   echo "Using organization ${USING_ORG}"
   if [ $USING_ORG -eq 1 ]; then
-    export ORG_DOM="customer.shopping.com"
-    export CORE_PEER_LOCALMSPID="CustomerMSP"
+    export ORG_DOM="suppliera.quotation.com"
+    export CORE_PEER_LOCALMSPID="SupplierAMSP"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG1_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/customer.shopping.com/users/Admin@customer.shopping.com/msp
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/suppliera.quotation.com/users/Admin@suppliera.quotation.com/msp
     export CORE_PEER_ADDRESS=localhost:7051
   elif [ $USING_ORG -eq 2 ]; then
-    export ORG_DOM="shop.shopping.com"
-    export CORE_PEER_LOCALMSPID="ShopMSP"
+    export ORG_DOM="supplierb.quotation.com"
+    export CORE_PEER_LOCALMSPID="SupplierBMSP"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG2_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/shop.shopping.com/users/Admin@shop.shopping.com/msp
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/supplierb.quotation.com/users/Admin@supplierb.quotation.com/msp
     export CORE_PEER_ADDRESS=localhost:9051
   elif [ $USING_ORG -eq 3 ]; then
-    export ORG_DOM="producer.shopping.com"
-    export CORE_PEER_LOCALMSPID="ProducerMSP"
+    export ORG_DOM="agency.quotation.com"
+    export CORE_PEER_LOCALMSPID="AgencyMSP"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG3_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/producer.shopping.com/users/Admin@producer.shopping.com/msp
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/agency.quotation.com/users/Admin@agency.quotation.com/msp
     export CORE_PEER_ADDRESS=localhost:11051
   else
     echo "================== ERROR !!! ORG Unknown =================="

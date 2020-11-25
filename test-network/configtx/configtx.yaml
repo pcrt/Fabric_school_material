@@ -25,7 +25,7 @@ Organizations:
         ID: OrdererMSP
 
         # MSPDir is the filesystem path which contains the MSP configuration
-        MSPDir: ../organizations/ordererOrganizations/shopping.com/msp
+        MSPDir: ../organizations/ordererOrganizations/quotation.com/msp
 
         # Policies defines the set of policies at this level of the config tree
         # For organization policies, their canonical path is usually
@@ -42,17 +42,17 @@ Organizations:
                 Rule: "OR('OrdererMSP.admin')"
 
         OrdererEndpoints:
-            - orderer.shopping.com:7050
+            - orderer.quotation.com:7050
 
-    - &Customer
+    - &SupplierA
         # DefaultOrg defines the organization which is used in the sampleconfig
         # of the fabric.git development environment
-        Name: CustomerMSP
+        Name: SupplierAMSP
 
         # ID to load the MSP definition as
-        ID: CustomerMSP
+        ID: SupplierAMSP
 
-        MSPDir: ../organizations/peerOrganizations/customer.shopping.com/msp
+        MSPDir: ../organizations/peerOrganizations/suppliera.quotation.com/msp
 
         # Policies defines the set of policies at this level of the config tree
         # For organization policies, their canonical path is usually
@@ -60,34 +60,34 @@ Organizations:
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('CustomerMSP.admin', 'CustomerMSP.peer', 'CustomerMSP.client')"
+                Rule: "OR('SupplierAMSP.admin', 'SupplierAMSP.peer', 'SupplierAMSP.client')"
             Writers:
                 Type: Signature
-                Rule: "OR('CustomerMSP.admin', 'CustomerMSP.client')"
+                Rule: "OR('SupplierAMSP.admin', 'SupplierAMSP.client')"
             Admins:
                 Type: Signature
-                Rule: "OR('CustomerMSP.admin')"
+                Rule: "OR('SupplierAMSP.admin')"
             Endorsement:
                 Type: Signature
-                Rule: "OR('CustomerMSP.peer')"
+                Rule: "OR('SupplierAMSP.peer')"
 
         # leave this flag set to true.
         AnchorPeers:
             # AnchorPeers defines the location of peers which can be used
             # for cross org gossip communication.  Note, this value is only
             # encoded in the genesis block in the Application section context
-            - Host: peer0.customer.shopping.com
+            - Host: peer0.suppliera.quotation.com
               Port: 7051
 
-    - &Shop
+    - &SupplierB
         # DefaultOrg defines the organization which is used in the sampleconfig
         # of the fabric.git development environment
-        Name: ShopMSP
+        Name: SupplierBMSP
 
         # ID to load the MSP definition as
-        ID: ShopMSP
+        ID: SupplierBMSP
 
-        MSPDir: ../organizations/peerOrganizations/shop.shopping.com/msp
+        MSPDir: ../organizations/peerOrganizations/supplierb.quotation.com/msp
 
         # Policies defines the set of policies at this level of the config tree
         # For organization policies, their canonical path is usually
@@ -95,53 +95,53 @@ Organizations:
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('ShopMSP.admin', 'ShopMSP.peer', 'ShopMSP.client')"
+                Rule: "OR('SupplierBMSP.admin', 'SupplierBMSP.peer', 'SupplierBMSP.client')"
             Writers:
                 Type: Signature
-                Rule: "OR('ShopMSP.admin', 'ShopMSP.client')"
+                Rule: "OR('SupplierBMSP.admin', 'SupplierBMSP.client')"
             Admins:
                 Type: Signature
-                Rule: "OR('ShopMSP.admin')"
+                Rule: "OR('SupplierBMSP.admin')"
             Endorsement:
                 Type: Signature
-                Rule: "OR('ShopMSP.peer')"
+                Rule: "OR('SupplierBMSP.peer')"
 
         AnchorPeers:
             # AnchorPeers defines the location of peers which can be used
             # for cross org gossip communication.  Note, this value is only
             # encoded in the genesis block in the Application section context
-            - Host: peer0.shop.shopping.com
+            - Host: peer0.supplierb.quotation.com
               Port: 9051
 
-    - &Producer
+    - &Agency
         # DefaultOrg defines the organization which is used in the sampleconfig
         # of the fabric.git development environment
-        Name: ProducerMSP
+        Name: AgencyMSP
 
         # ID to load the MSP definition as
-        ID: ProducerMSP
+        ID: AgencyMSP
 
-        MSPDir: ../organizations/peerOrganizations/producer.shopping.com/msp
+        MSPDir: ../organizations/peerOrganizations/agency.quotation.com/msp
 
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('ProducerMSP.admin', 'ProducerMSP.peer', 'ProducerMSP.client')"
+                Rule: "OR('AgencyMSP.admin', 'AgencyMSP.peer', 'AgencyMSP.client')"
             Writers:
                 Type: Signature
-                Rule: "OR('ProducerMSP.admin', 'ProducerMSP.client')"
+                Rule: "OR('AgencyMSP.admin', 'AgencyMSP.client')"
             Admins:
                 Type: Signature
-                Rule: "OR('ProducerMSP.admin')"
+                Rule: "OR('AgencyMSP.admin')"
             Endorsement:
                 Type: Signature
-                Rule: "OR('ProducerMSP.peer')"
+                Rule: "OR('AgencyMSP.peer')"
 
         AnchorPeers:
             # AnchorPeers defines the location of peers which can be used
             # for cross org gossip communication.  Note, this value is only
             # encoded in the genesis block in the Application section context
-            - Host: peer0.producer.shopping.com
+            - Host: peer0.agency.quotation.com
               Port: 11051
 
 ################################################################################
@@ -251,10 +251,10 @@ Orderer: &OrdererDefaults
 
     EtcdRaft:
         Consenters:
-        - Host: orderer.shopping.com
+        - Host: orderer.quotation.com
           Port: 7050
-          ClientTLSCert: ../organizations/ordererOrganizations/shopping.com/orderers/orderer.shopping.com/tls/server.crt
-          ServerTLSCert: ../organizations/ordererOrganizations/shopping.com/orderers/orderer.shopping.com/tls/server.crt
+          ClientTLSCert: ../organizations/ordererOrganizations/quotation.com/orderers/orderer.quotation.com/tls/server.crt
+          ServerTLSCert: ../organizations/ordererOrganizations/quotation.com/orderers/orderer.quotation.com/tls/server.crt
 
     # Batch Timeout: The amount of time to wait before creating a batch
     BatchTimeout: 2s
@@ -350,9 +350,9 @@ Profiles:
         Consortiums:
             SampleConsortium:
                 Organizations:
-                    - *Customer
-                    - *Shop
-                    - *Producer
+                    - *SupplierA
+                    - *SupplierB
+                    - *Agency
     
     ThreeOrgsChannel:
         Consortium: SampleConsortium
@@ -360,8 +360,8 @@ Profiles:
         Application:
             <<: *ApplicationDefaults
             Organizations:
-                - *Customer
-                - *Shop
-                - *Producer
+                - *SupplierA
+                - *SupplierB
+                - *Agency
             Capabilities:
                 <<: *ApplicationCapabilities

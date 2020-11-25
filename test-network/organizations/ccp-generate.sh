@@ -28,30 +28,30 @@ function yaml_ccp {
         organizations/ccp-template.yaml | sed -e $'s/\\\\n/\\\n        /g'
 }
 
-ORG="customer.shopping.com"
+ORG="suppliera.quotation.com"
 P0PORT=7051
 CAPORT=7054
-ORGNAME="CustomerMSP"
+ORGNAME="SupplierAMSP"
 PEERPEM=organizations/peerOrganizations/${ORG}/tlsca/tlsca.${ORG}-cert.pem
 CAPEM=organizations/peerOrganizations/${ORG}/ca/ca.${ORG}-cert.pem
 
 echo "$(json_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM $ORGNAME)" > organizations/peerOrganizations/${ORG}/connection-org1.json
 echo "$(yaml_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM $ORGNAME)" > organizations/peerOrganizations/${ORG}/connection-org1.yaml
 
-ORG="shop.shopping.com"
+ORG="supplierb.quotation.com"
 P0PORT=9051
 CAPORT=8054
-ORGNAME="ShopMSP"
+ORGNAME="SupplierBMSP"
 PEERPEM=organizations/peerOrganizations/${ORG}/tlsca/tlsca.${ORG}-cert.pem
 CAPEM=organizations/peerOrganizations/${ORG}/ca/ca.${ORG}-cert.pem
 
 echo "$(json_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM $ORGNAME)" > organizations/peerOrganizations/${ORG}/connection-org2.json
 echo "$(yaml_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM $ORGNAME)" > organizations/peerOrganizations/${ORG}/connection-org2.yaml
 
-ORG="producer.shopping.com"
+ORG="agency.quotation.com"
 P0PORT=11051
 CAPORT=11054
-ORGNAME="ProducerMSP"
+ORGNAME="AgencyMSP"
 PEERPEM=organizations/peerOrganizations/${ORG}/tlsca/tlsca.${ORG}-cert.pem
 CAPEM=organizations/peerOrganizations/${ORG}/ca/ca.${ORG}-cert.pem
 

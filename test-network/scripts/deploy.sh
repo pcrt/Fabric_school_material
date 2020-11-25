@@ -2,8 +2,8 @@
 
 source scripts/utils.sh
 
-CHANNEL_NAME=${1:-"shoppingchannel"}
-CC_NAME=${2:-"producer"}
+CHANNEL_NAME=${1:-"quotationchannel"}
+CC_NAME=${2:-"quotation"}
 CC_SRC_PATH=${3:-"../chaincodes"}
 CC_SRC_LANGUAGE=${4:-"javascript"}
 CC_VERSION=${5:-"1.0"}
@@ -126,7 +126,7 @@ approveForMyOrg() {
   ORG=$1
   setGlobals $ORG
   set -x
-  peer lifecycle chaincode approveformyorg -o localhost:7050 --ordererTLSHostnameOverride orderer.shopping.com --tls --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} --version ${CC_VERSION} --package-id ${PACKAGE_ID} --sequence ${CC_SEQUENCE} ${INIT_REQUIRED} ${CC_END_POLICY} ${CC_COLL_CONFIG} >&log.txt
+  peer lifecycle chaincode approveformyorg -o localhost:7050 --ordererTLSHostnameOverride orderer.quotation.com --tls --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} --version ${CC_VERSION} --package-id ${PACKAGE_ID} --sequence ${CC_SEQUENCE} ${INIT_REQUIRED} ${CC_END_POLICY} ${CC_COLL_CONFIG} >&log.txt
   res=$?
   { set +x; } 2>/dev/null
   cat log.txt
@@ -175,7 +175,7 @@ commitChaincodeDefinition() {
   # peer (if join was successful), let's supply it directly as we know
   # it using the "-o" option
   set -x
-  peer lifecycle chaincode commit -o localhost:7050 --ordererTLSHostnameOverride orderer.shopping.com --tls --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} $PEER_CONN_PARMS --version ${CC_VERSION} --sequence ${CC_SEQUENCE} ${INIT_REQUIRED} ${CC_END_POLICY} ${CC_COLL_CONFIG} >&log.txt
+  peer lifecycle chaincode commit -o localhost:7050 --ordererTLSHostnameOverride orderer.quotation.com --tls --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} $PEER_CONN_PARMS --version ${CC_VERSION} --sequence ${CC_SEQUENCE} ${INIT_REQUIRED} ${CC_END_POLICY} ${CC_COLL_CONFIG} >&log.txt
   res=$?
   { set +x; } 2>/dev/null
   cat log.txt
@@ -223,7 +223,7 @@ chaincodeInvokeInit() {
   set -x
   fcn_call='{"function":"'${CC_INIT_FCN}'","Args":[]}'
   infoln "invoke fcn call:${fcn_call}"
-  peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer.shopping.com --tls --cafile $ORDERER_CA -C $CHANNEL_NAME -n ${CC_NAME} $PEER_CONN_PARMS --isInit -c ${fcn_call} >&log.txt
+  peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer.quotation.com --tls --cafile $ORDERER_CA -C $CHANNEL_NAME -n ${CC_NAME} $PEER_CONN_PARMS --isInit -c ${fcn_call} >&log.txt
   res=$?
   { set +x; } 2>/dev/null
   cat log.txt
@@ -261,11 +261,11 @@ chaincodeInvokeInit() {
 packageChaincode 1
 
 ## Install chaincode on peer0.org1 and peer0.org2
-infoln "Installing chaincode on peer0.customer..."
+infoln "Installing chaincode on peer0.suppliera..."
 installChaincode 1
-infoln "Install chaincode on peer0.shop..."
+infoln "Install chaincode on peer0.supplierb..."
 installChaincode 2
-infoln "Install chaincode on peer0.producer..."
+infoln "Install chaincode on peer0.agency..."
 installChaincode 3
 
 ## query whether the chaincode is installed
@@ -274,23 +274,23 @@ queryInstalled 1
 ## approve the definition for org1
 approveForMyOrg 1
 ## check whether the chaincode definition is ready to be committed
-checkCommitReadiness 1 "\"CustomerMSP\": true" "\"ShopMSP\": false" "\"ProducerMSP\": false"
-checkCommitReadiness 2 "\"CustomerMSP\": true" "\"ShopMSP\": false" "\"ProducerMSP\": false"
-checkCommitReadiness 3 "\"CustomerMSP\": true" "\"ShopMSP\": false" "\"ProducerMSP\": false"
+checkCommitReadiness 1 "\"SupplierAMSP\": true" "\"SupplierBMSP\": false" "\"AgencyMSP\": false"
+checkCommitReadiness 2 "\"SupplierAMSP\": true" "\"SupplierBMSP\": false" "\"AgencyMSP\": false"
+checkCommitReadiness 3 "\"SupplierAMSP\": true" "\"SupplierBMSP\": false" "\"AgencyMSP\": false"
 
 ## now approve also for org2
 approveForMyOrg 2
 ## check whether the chaincode definition is ready to be committed
-checkCommitReadiness 1 "\"CustomerMSP\": true" "\"ShopMSP\": true" "\"ProducerMSP\": false"
-checkCommitReadiness 2 "\"CustomerMSP\": true" "\"ShopMSP\": true" "\"ProducerMSP\": false"
-checkCommitReadiness 3 "\"CustomerMSP\": true" "\"ShopMSP\": true" "\"ProducerMSP\": false"
+checkCommitReadiness 1 "\"SupplierAMSP\": true" "\"SupplierBMSP\": true" "\"AgencyMSP\": false"
+checkCommitReadiness 2 "\"SupplierAMSP\": true" "\"SupplierBMSP\": true" "\"AgencyMSP\": false"
+checkCommitReadiness 3 "\"SupplierAMSP\": true" "\"SupplierBMSP\": true" "\"AgencyMSP\": false"
 
 ## now approve also for org3
 approveForMyOrg 3
 ## check whether the chaincode definition is ready to be committed
-checkCommitReadiness 1 "\"CustomerMSP\": true" "\"ShopMSP\": true" "\"ProducerMSP\": true"
-checkCommitReadiness 2 "\"CustomerMSP\": true" "\"ShopMSP\": true" "\"ProducerMSP\": true"
-checkCommitReadiness 3 "\"CustomerMSP\": true" "\"ShopMSP\": true" "\"ProducerMSP\": true"
+checkCommitReadiness 1 "\"SupplierAMSP\": true" "\"SupplierBMSP\": true" "\"AgencyMSP\": true"
+checkCommitReadiness 2 "\"SupplierAMSP\": true" "\"SupplierBMSP\": true" "\"AgencyMSP\": true"
+checkCommitReadiness 3 "\"SupplierAMSP\": true" "\"SupplierBMSP\": true" "\"AgencyMSP\": true"
 
 ## now that we know for sure both orgs have approved, commit the definition
 commitChaincodeDefinition 1 2 3

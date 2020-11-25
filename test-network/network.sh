@@ -27,8 +27,8 @@ function printHelp() {
   echo "      - 'deployCC' - deploy the choreography chaincode on the channel"
   echo
   echo "    Flags:"
-  echo "    -c <channel name> - channel name to use (defaults to \"shoppingchannel\")"
-  echo "    -n <chaincode name> - chaincode name to use (defaults to \"producer\")"
+  echo "    -c <channel name> - channel name to use (defaults to \"quotationchannel\")"
+  echo "    -n <chaincode name> - chaincode name to use (defaults to \"quotation\")"
   echo "    -r <max retry> - CLI times out after certain number of attempts (defaults to 5)"
   echo "    -d <delay> - delay duration in seconds (defaults to 3)"
   echo "    -l <language> - the programming language of the chaincode to deploy: javascript (default), typescript"
@@ -321,10 +321,10 @@ CRYPTO="cryptogen"
 MAX_RETRY=5
 # default for delay between commands
 CLI_DELAY=3
-# channel name defaults to "shoppingchannel"
-CHANNEL_NAME="shoppingchannel"
+# channel name defaults to "quotationchannel"
+CHANNEL_NAME="quotationchannel"
 # chaincode name
-CC_NAME="producer"
+CC_NAME="quotation"
 # chaincode path
 CC_SRC_PATH="../chaincodes"
 # chaincode sequence
