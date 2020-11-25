@@ -237,18 +237,30 @@ function createConsortium() {
     exit 1
   fi
 
-  echo "#########  Generating Orderer Genesis block ##############"
-
-  # Note: For some unknown reason (at least for now) the block file can't be
-  # named orderer.genesis.block or the orderer will fail to launch!
+  echo "#########  Generating Orderer Genesis block for Quotation1 consortium ##############"
+  
+  local PROFILE_GN="Q1OrdererGenesis"
   set -x
   configtxgen -profile $PROFILE_GN -channelID system-channel -outputBlock ./system-genesis-block/genesis.block
   res=$?
   set +x
   if [ $res -ne 0 ]; then
-    echo "Failed to generate orderer genesis block..."
+    echo "Failed to generate Quotation1 orderer genesis block..."
     exit 1
   fi
+
+  echo "#########  Generating Orderer Genesis block for Quotation2 consortium ##############"
+
+  PROFILE_GN="Q2OrdererGenesis"
+  set -x
+  configtxgen -profile $PROFILE_GN -channelID system-channel -outputBlock ./system-genesis-block/genesis.block
+  res=$?
+  set +x
+  if [ $res -ne 0 ]; then
+    echo "Failed to generate Quotation2 orderer genesis block..."
+    exit 1
+  fi
+
 }
 
 # After we create the org crypto material and the system channel genesis block,
@@ -342,8 +354,6 @@ VERSION=1
 IMAGETAG="latest"
 # default database
 DATABASE="leveldb"
-# orderer genesis block profile
-PROFILE_GN="ThreeOrgsOrdererGenesis"
 # channel profile: 3 orgs profiles
 PROFILE_TX="ThreeOrgsChannel" 
 

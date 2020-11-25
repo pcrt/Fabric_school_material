@@ -339,7 +339,7 @@ Channel: &ChannelDefaults
 ################################################################################
 Profiles:
 
-    ThreeOrgsOrdererGenesis:
+    Q1OrdererGenesis:
         <<: *ChannelDefaults
         Orderer:
             <<: *OrdererDefaults
@@ -348,19 +348,42 @@ Profiles:
             Capabilities:
                 <<: *OrdererCapabilities
         Consortiums:
-            SampleConsortium:
+            Q1Consortium:
                 Organizations:
                     - *SupplierA
+                    - *Agency
+    
+    Q2OrdererGenesis:
+        <<: *ChannelDefaults
+        Orderer:
+            <<: *OrdererDefaults
+            Organizations:
+                - *OrdererOrg
+            Capabilities:
+                <<: *OrdererCapabilities
+        Consortiums:
+            Q2Consortium:
+                Organizations:
                     - *SupplierB
                     - *Agency
     
-    ThreeOrgsChannel:
-        Consortium: SampleConsortium
+    Q1Channel:
+        Consortium: Q1Consortium
         <<: *ChannelDefaults
         Application:
             <<: *ApplicationDefaults
             Organizations:
                 - *SupplierA
+                - *Agency
+            Capabilities:
+                <<: *ApplicationCapabilities
+    
+    Q2Channel:
+        Consortium: Q2Consortium
+        <<: *ChannelDefaults
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
                 - *SupplierB
                 - *Agency
             Capabilities:
