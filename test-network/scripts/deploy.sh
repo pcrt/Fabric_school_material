@@ -2,24 +2,23 @@
 
 source scripts/utils.sh
 
-CHANNEL_NAME=${1:-"quotationchannel"}
-CC_NAME=${2:-"quotation"}
-CC_SRC_PATH=${3:-"../chaincodes"}
-CC_SRC_LANGUAGE=${4:-"javascript"}
-CC_VERSION=${5:-"1.0"}
-CC_SEQUENCE=${6:-"1"}
-CC_INIT_FCN=${7:-"NA"}
-CC_END_POLICY=${8:-"NA"}
-CC_COLL_CONFIG=${9:-"NA"}
-DELAY=${10:-"3"}
-MAX_RETRY=${11:-"5"}
-VERBOSE=${12:-"false"}
+CC_NAME=${1:-"quotation"}
+CC_SRC_PATH=${2:-"../chaincodes"}
+CC_SRC_LANGUAGE=${3:-"javascript"}
+CC_VERSION=${4:-"1.0"}
+CC_SEQUENCE=${5:-"1"}
+CC_INIT_FCN=${6:-"NA"}
+CC_END_POLICY=${7:-"NA"}
+CC_COLL_CONFIG=${8:-"NA"}
+DELAY=${9:-"3"}
+MAX_RETRY=${10:-"5"}
+VERBOSE=${11:-"false"}
 
 # Chaincode path for the specific smartcontract
 CC_SRC_PATH=$CC_SRC_PATH/$CC_NAME
 
 println "executing with the following"
-println "- CHANNEL_NAME: ${C_GREEN}${CHANNEL_NAME}${C_RESET}"
+println "- CHANNELs: ${C_GREEN}quotationchannel1 , quotationchannel2${C_RESET}"
 println "- CC_NAME: ${C_GREEN}${CC_NAME}${C_RESET}"
 println "- CC_SRC_PATH: ${C_GREEN}${CC_SRC_PATH}${C_RESET}"
 println "- CC_SRC_LANGUAGE: ${C_GREEN}${CC_SRC_LANGUAGE}${C_RESET}"
@@ -231,81 +230,60 @@ chaincodeInvokeInit() {
   successln "Invoke transaction successful on $PEERS on channel '$CHANNEL_NAME'"
 }
 
-#chaincodeQuery() {
-#  ORG=$1
-#  setGlobals $ORG
-#  infoln "Querying on peer0.${ORG_DOM} on channel '$CHANNEL_NAME'..."
-#  local rc=1
-#  local COUNTER=1
-  # continue to poll
-  # we either get a successful response, or reach MAX RETRY
-#  while [ $rc -ne 0 -a $COUNTER -lt $MAX_RETRY ]; do
-#    sleep $DELAY
-#    infoln "Attempting to Query peer0.${ORG_DOM}, Retry after $DELAY seconds."
-#    set -x
-#    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"Args":["queryAllCars"]}' >&log.txt
-#    res=$?
-#    { set +x; } 2>/dev/null
-#    let rc=$res
-#    COUNTER=$(expr $COUNTER + 1)
-#  done
-#  cat log.txt
-#  if test $rc -eq 0; then
-#    successln "Query successful on peer0.${ORG_DOM} on channel '$CHANNEL_NAME'"
-#  else
-#    fatalln "After $MAX_RETRY attempts, Query result on peer0.${ORG_DOM} is INVALID!"
-#  fi
-#}
-
-## package the chaincode
-packageChaincode 1
-
-## Install chaincode on peer0.org1 and peer0.org2
+# Package the chaincode
+packageChaincode 3
+## Install chaincode
 infoln "Installing chaincode on peer0.suppliera..."
 installChaincode 1
-infoln "Install chaincode on peer0.supplierb..."
+infoln "Installing chaincode on peer0.supplierb..."
 installChaincode 2
 infoln "Install chaincode on peer0.agency..."
 installChaincode 3
-
 ## query whether the chaincode is installed
-queryInstalled 1
+queryInstalled 3
 
+## Deploy cc to quotationchannel1
+CHANNEL_NAME="quotationchannel1"
+infoln "Deploy into channel $CHANNEL_NAME"
 ## approve the definition for org1
 approveForMyOrg 1
-## check whether the chaincode definition is ready to be committed
-checkCommitReadiness 1 "\"SupplierAMSP\": true" "\"SupplierBMSP\": false" "\"AgencyMSP\": false"
-checkCommitReadiness 2 "\"SupplierAMSP\": true" "\"SupplierBMSP\": false" "\"AgencyMSP\": false"
-checkCommitReadiness 3 "\"SupplierAMSP\": true" "\"SupplierBMSP\": false" "\"AgencyMSP\": false"
-
-## now approve also for org2
-approveForMyOrg 2
-## check whether the chaincode definition is ready to be committed
-checkCommitReadiness 1 "\"SupplierAMSP\": true" "\"SupplierBMSP\": true" "\"AgencyMSP\": false"
-checkCommitReadiness 2 "\"SupplierAMSP\": true" "\"SupplierBMSP\": true" "\"AgencyMSP\": false"
-checkCommitReadiness 3 "\"SupplierAMSP\": true" "\"SupplierBMSP\": true" "\"AgencyMSP\": false"
-
 ## now approve also for org3
 approveForMyOrg 3
 ## check whether the chaincode definition is ready to be committed
-checkCommitReadiness 1 "\"SupplierAMSP\": true" "\"SupplierBMSP\": true" "\"AgencyMSP\": true"
-checkCommitReadiness 2 "\"SupplierAMSP\": true" "\"SupplierBMSP\": true" "\"AgencyMSP\": true"
-checkCommitReadiness 3 "\"SupplierAMSP\": true" "\"SupplierBMSP\": true" "\"AgencyMSP\": true"
-
+checkCommitReadiness 1 "\"SupplierAMSP\": true" "\"AgencyMSP\": true"
+checkCommitReadiness 3 "\"SupplierAMSP\": true" "\"AgencyMSP\": true"
 ## now that we know for sure both orgs have approved, commit the definition
-commitChaincodeDefinition 1 2 3
-
+commitChaincodeDefinition 1 3
 ## query on orgs to see that the definition committed successfully
 queryCommitted 1
-queryCommitted 2
 queryCommitted 3
-
 ## Invoke the chaincode - this does require that the chaincode have the 'initLedger'
-## method defined
 if [ "$CC_INIT_FCN" = "NA" ]; then
   infoln "Chaincode initialization is not required"
 else
-  chaincodeInvokeInit 1 2
+  chaincodeInvokeInit 1 3
+fi
+
+## Deploy cc to quotationchannel1
+CHANNEL_NAME="quotationchannel2"
+infoln "Deploy into channel $CHANNEL_NAME"
+## approve the definition for org2
+approveForMyOrg 2
+## now approve also for org3
+approveForMyOrg 3
+## check whether the chaincode definition is ready to be committed
+checkCommitReadiness 2 "\"SupplierBMSP\": true" "\"AgencyMSP\": true"
+checkCommitReadiness 3 "\"SupplierBMSP\": true" "\"AgencyMSP\": true"
+## now that we know for sure both orgs have approved, commit the definition
+commitChaincodeDefinition 2 3
+## query on orgs to see that the definition committed successfully
+queryCommitted 2
+queryCommitted 3
+## Invoke the chaincode - this does require that the chaincode have the 'initLedger'
+if [ "$CC_INIT_FCN" = "NA" ]; then
+  infoln "Chaincode initialization is not required"
+else
+  chaincodeInvokeInit 2 3
 fi
 
 exit 0

@@ -21,13 +21,12 @@ function printHelp() {
   echo "Usage: "
   echo "  network.sh <Mode> [Flags]"
   echo "    <Mode>"
-  echo "      - 'up' - bring up fabric orderer and peer nodes. No channel is created"
-  echo "      - 'up createChannels' - bring up fabric network with two channels (quotationchannel1 and quotationchannel2)"
+  echo "      - 'up' - bring up fabric network with two consortium (SupplierA/Agency and SupplierB/Agency). No channel is created"
+  echo "      - 'up createChannels' - bring up fabric network. Create and join to the two channels (quotationchannel1 and quotationchannel2)"
   echo "      - 'createChannels' - create and join to the channels (quotationchannel1 and quotationchannel2) after the network is created"
-  echo "      - 'deployCC' - deploy the choreography chaincode on the channel"
+  echo "      - 'deployCCs' - deploy the quotation chaincode on the two channels"
   echo
   echo "    Flags:"
-  echo "    -c <channel name> - channel name to use (defaults to \"quotationchannel\")"
   echo "    -n <chaincode name> - chaincode name to use (defaults to \"quotation\")"
   echo "    -r <max retry> - CLI times out after certain number of attempts (defaults to 5)"
   echo "    -d <delay> - delay duration in seconds (defaults to 3)"
@@ -41,13 +40,13 @@ function printHelp() {
   echo "  network.sh up"
   echo "  network.sh up createChannels"
   echo "  network.sh createChannels"
-  echo "  network.sh deployCC -c -n -l -v -r -d -verbose"
+  echo "  network.sh deployCCs -n -l -v -r -d -verbose"
   echo
   echo
   echo " Examples:"
   echo "  network.sh up createChannels"
   echo "  network.sh createChannels"
-  echo "  network.sh deployCC -n chaincodeName"
+  echo "  network.sh deployCCs"
 }
 
 # Versions of fabric known not to work with the test network
@@ -299,9 +298,9 @@ function createChannels() {
 }
 
 ## Call the script to isntall and instantiate a chaincode on the channel
-function deployCC() {
+function deployCCs() {
 
-  scripts/deploy.sh $CHANNEL_NAME $CC_NAME $CC_SRC_PATH $CC_SRC_LANGUAGE $VERSION $CC_SEQUENCE $CC_INIT_FCN
+  scripts/deploy.sh $CC_NAME $CC_SRC_PATH $CC_SRC_LANGUAGE $VERSION $CC_SEQUENCE $CC_INIT_FCN
 
   if [ $? -ne 0 ]; then
     echo "ERROR !!! Deploying chaincode failed"
@@ -321,8 +320,6 @@ CRYPTO="cryptogen"
 MAX_RETRY=5
 # default for delay between commands
 CLI_DELAY=3
-# channel name defaults to "quotationchannel"
-CHANNEL_NAME="quotationchannel1"
 # chaincode name
 CC_NAME="quotation"
 # chaincode path
@@ -333,7 +330,6 @@ CC_SEQUENCE="1"
 CC_INIT_FCN="initLedger"
 # use this as the default docker-compose yaml definition
 COMPOSE_FILE_BASE=docker/docker-compose-test-net.yaml
-#
 # use javascript as the default language for chaincode
 CC_SRC_LANGUAGE=javascript
 # Chaincode version
@@ -371,10 +367,6 @@ while [[ $# -ge 1 ]] ; do
   -h )
     printHelp
     exit 0
-    ;;
-  -c )
-    CHANNEL_NAME="$2"
-    shift
     ;;
   -n )
     CC_NAME="$2"
@@ -431,8 +423,8 @@ elif [ "$MODE" == "createChannels" ]; then
   echo
   echo "CLI timeout of '${MAX_RETRY}' tries and CLI delay of '${CLI_DELAY}' seconds and using database '${DATABASE} ${CRYPTO_MODE}"
   echo
-elif [ "$MODE" == "deployCC" ]; then
-  echo "deploying chaincode on channel '${CHANNEL_NAME}'"
+elif [ "$MODE" == "deployCCs" ]; then
+  echo "deploying quotation chaincode on the channels"
   echo
 else
   printHelp
@@ -443,8 +435,8 @@ if [ "${MODE}" == "up" ]; then
   networkUp
 elif [ "${MODE}" == "createChannels" ]; then
   createChannels
-elif [ "${MODE}" == "deployCC" ]; then
-  deployCC
+elif [ "${MODE}" == "deployCCs" ]; then
+  deployCCs
 else
   printHelp
   exit 1
