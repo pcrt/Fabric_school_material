@@ -1,17 +1,5 @@
 #!/bin/bash
-#
-# Copyright IBM Corp All Rights Reserved
-#
-# SPDX-License-Identifier: Apache-2.0
-#
 
-# This script brings up a Hyperledger Fabric network for testing smart contracts
-# and applications. The test network consists of two organizations with one
-# peer each, and a single node Raft ordering service. Users can also use this
-# script to create a channel deploy a chaincode on the channel
-#
-# prepending $PWD/../bin to PATH to ensure we are picking up the correct binaries
-# this may be commented out to resolve installed version of tools if desired
 export PATH=${PWD}/../bin:${PWD}:$PATH
 export FABRIC_CFG_PATH=${PWD}/configtx
 export VERBOSE=false
@@ -25,6 +13,7 @@ function printHelp() {
   echo "      - 'up createChannels' - bring up fabric network. Create and join to the two channels (quotationchannel1 and quotationchannel2)"
   echo "      - 'createChannels' - create and join to the channels (quotationchannel1 and quotationchannel2) after the network is created"
   echo "      - 'deployCCs' - deploy the quotation chaincode on the two channels"
+  echo "      - 'invokeCC' - invoke the 'requestQuotation'transaction to SupplierA"
   echo
   echo "    Flags:"
   echo "    -n <chaincode name> - chaincode name to use (defaults to \"quotation\")"
@@ -47,6 +36,7 @@ function printHelp() {
   echo "  network.sh up createChannels"
   echo "  network.sh createChannels"
   echo "  network.sh deployCCs"
+  echo "  network.sh invokeCC"
 }
 
 # Versions of fabric known not to work with the test network
@@ -96,32 +86,6 @@ function checkPrereqs() {
   done
 }
 
-
-# Before you can bring up a network, each organization needs to generate the crypto
-# material that will define that organization on the network. Because Hyperledger
-# Fabric is a permissioned blockchain, each node and user on the network needs to
-# use certificates and keys to sign and verify its actions. In addition, each user
-# needs to belong to an organization that is recognized as a member of the network.
-# You can use the Cryptogen tool or Fabric CAs to generate the organization crypto
-# material.
-
-# By default, the sample network uses cryptogen. Cryptogen is a tool that is
-# meant for development and testing that can quicky create the certificates and keys
-# that can be consumed by a Fabric network. The cryptogen tool consumes a series
-# of configuration files for each organization in the "organizations/cryptogen"
-# directory. Cryptogen uses the files to generate the crypto  material for each
-# org in the "organizations" directory.
-
-# You can also Fabric CAs to generate the crypto material. CAs sign the certificates
-# and keys that they generate to create a valid root of trust for each organization.
-# The script uses Docker Compose to bring up three CAs, one for each peer organization
-# and the ordering organization. The configuration file for creating the Fabric CA
-# servers are in the "organizations/fabric-ca" directory. Within the same diectory,
-# the "registerEnroll.sh" script uses the Fabric CA client to create the identites,
-# certificates, and MSP folders that are needed to create the test network in the
-# "organizations/ordererOrganizations" directory.
-
-# Create Organziation crypto material using cryptogen or CAs
 function createOrgs() {
 
   if [ -d "organizations/peerOrganizations" ]; then
@@ -200,33 +164,6 @@ function createOrgs() {
   ./organizations/ccp-generate.sh
 }
 
-# Once you create the organization crypto material, you need to create the
-# genesis block of the orderer system channel. This block is required to bring
-# up any orderer nodes and create any application channels.
-
-# The configtxgen tool is used to create the genesis block. Configtxgen consumes a
-# "configtx.yaml" file that contains the definitions for the sample network. The
-# genesis block is defiend using the "ThreeOrgsOrdererGenesis" profile at the bottom
-# of the file. This profile defines a sample consortium, "SampleConsortium",
-# consisting of our three Peer Orgs. This consortium defines which organizations are
-# recognized as members of the network. The peer and ordering organizations are defined
-# in the "Profiles" section at the top of the file. As part of each organization
-# profile, the file points to a the location of the MSP directory for each member.
-# This MSP is used to create the channel MSP that defines the root of trust for
-# each organization. In essense, the channel MSP allows the nodes and users to be
-# recognized as network members. The file also specifies the anchor peers for each
-# peer org. In future steps, this same file is used to create the channel creation
-# transaction and the anchor peer updates.
-#
-#
-# If you receive the following warning, it can be safely ignored:
-#
-# [bccsp] GetDefault -> WARN 001 Before using BCCSP, please call InitFactories(). Falling back to bootBCCSP.
-#
-# You can ignore the logs regarding intermediate certs, we are not using them in
-# this crypto implementation.
-
-# Generate orderer system channel genesis block.
 function createConsortium() {
 
   which configtxgen
@@ -248,13 +185,6 @@ function createConsortium() {
   fi
 }
 
-# After we create the org crypto material and the system channel genesis block,
-# we can now bring up the peers and orderering service. By default, the base
-# file for creating the network is "docker-compose-test-net.yaml" in the ``docker``
-# folder. This file defines the environment variables and file mounts that
-# point the crypto material and genesis block that were created in earlier.
-
-# Bring up the peer and orderer nodes using docker compose.
 function networkUp() {
 
   checkPrereqs
@@ -299,14 +229,21 @@ function createChannels() {
 
 ## Call the script to isntall and instantiate a chaincode on the channel
 function deployCCs() {
-
   scripts/deploy.sh $CC_NAME $CC_SRC_PATH $CC_SRC_LANGUAGE $VERSION $CC_SEQUENCE $CC_INIT_FCN
-
   if [ $? -ne 0 ]; then
     echo "ERROR !!! Deploying chaincode failed"
     exit 1
   fi
 
+  exit 0
+}
+
+function invokeCC() {
+  scripts/query.sh
+  if [ $? -ne 0 ]; then
+    echo "Error !!! Invoke transaction failed"
+    exit 1
+  fi
   exit 0
 }
 
@@ -426,6 +363,9 @@ elif [ "$MODE" == "createChannels" ]; then
 elif [ "$MODE" == "deployCCs" ]; then
   echo "deploying quotation chaincode on the channels"
   echo
+elif [ "$MODE" == "invokeCC" ]; then
+  echo "invoking quotation smartcontract transaction"
+  echo
 else
   printHelp
   exit 1
@@ -437,6 +377,8 @@ elif [ "${MODE}" == "createChannels" ]; then
   createChannels
 elif [ "${MODE}" == "deployCCs" ]; then
   deployCCs
+elif [ "${MODE}" == "invokeCC" ]; then
+  invokeCC
 else
   printHelp
   exit 1

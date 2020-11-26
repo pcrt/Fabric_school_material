@@ -1,38 +1,29 @@
 #!/bin/bash
 
 # import utils
-. scripts/envVar.sh
+source scripts/utils.sh
+source scripts/envVar.sh
+export FABRIC_CFG_PATH=${PWD}/../config
 
-ORDERER=orderer.shopping.com:7050
-ORDERER_DOM=orderer.shopping.com
-CHANNEL=shoppingchannel
-
-################################################################### TODO #####################################################
-
-# producer contract v.1
-makeQuotationByShop() {
-    # 1 = Customer
-    # 2 = Shop
-    # 3 = Producer
-    setGlobals 2
-    local FIXED = /opt/gopath/src/github.com/hyperledger/fabric/peer/organizations
-    peer chaincode invoke -o $ORDERER --tls true --cafile $FIXED/ordererOrganizations/shopping.com/orderers/$ORDERER_DOM/msp/tlscacerts/tlsca.shopping.com-cert.pem -C $CHANNEL -n producer --peerAddresses peer0.customer.shopping.com:7051 --tlsRootCertFiles $FIXED/peerOrganizations/customer.shopping.com/peers/peer0.customer.shopping.com/tls/ca.crt --peerAddresses peer0.shop.shopping.com:9051 --tlsRootCertFiles $FIXED/peerOrganizations/shop.shopping.com/peers/peer0.shop.shopping.com/tls/ca.crt --peerAddresses peer0.producer.shopping.com:11051 --tlsRootCertFiles $FIXED/peerOrganizations/producer.shopping.com/peers/peer0.producer.shopping.com/tls/ca.crt -c '{"Args":["makeQuotation","Shoes","10"]}'
+requestQuotationAgencyToSupplierA() {
+  # 1 = SupplierA, 2 = SupplierB, 3 = Agency
+  setGlobals 3
+  local ORDERER=localhost:7050
+  local PEER0_ORG1=localhost:7051   # SupplierA
+  # local PEER0_ORG2=localhost:9051   # SupplierB
+  local PEER0_ORG3=localhost:11051  # Agency
+  local NAME_CC=quotation
+  local CHANNEL="quotationchannel1"
+  local TX='{"Args":["requestQuotation","quotation4","pippo","10"]}'
+  
+  set -x
+  peer chaincode invoke -o $ORDERER --tls true --cafile $ORDERER_CA -C $CHANNEL -n $NAME_CC --peerAddresses $PEER0_ORG1 --tlsRootCertFiles $PEER0_ORG1_CA --peerAddresses $PEER0_ORG3 --tlsRootCertFiles $PEER0_ORG3_CA -c $TX
+  res=$?
+  { set +x; } 2>/dev/null
+  cat log.txt
+  verifyResult $res "invoke transaction has failed"
+  successln "invoke transaction success"
 }
 
-requestQuotationByShop() {
-    # 1 = Customer
-    # 2 = Shop
-    # 3 = Producer
-    setGlobals 2
-
-
-
-}
-
-verifyResult() {
-  if [ $1 -ne 0 ]; then
-    echo "!!!!!!!!!!!!!!! "$2" !!!!!!!!!!!!!!!!"
-    echo
-    exit 1
-  fi
-}
+requestQuotationAgencyToSupplierA
+exit 0
