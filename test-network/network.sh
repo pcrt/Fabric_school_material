@@ -13,7 +13,7 @@ function printHelp() {
   echo "      - 'up createChannels' - bring up fabric network. Create and join to the two channels (quotationchannel1 and quotationchannel2)"
   echo "      - 'createChannels' - create and join to the channels (quotationchannel1 and quotationchannel2) after the network is created"
   echo "      - 'deployCCs' - deploy the quotation chaincode on the two channels"
-  echo "      - 'invokeCC' - invoke the 'requestQuotation'transaction to SupplierA"
+  echo "      - 'invokeCC' - invoke the transactions specified in 'scripts/query.sh'"
   echo
   echo "    Flags:"
   echo "    -n <chaincode name> - chaincode name to use (defaults to \"quotation\")"
@@ -22,6 +22,7 @@ function printHelp() {
   echo "    -l <language> - the programming language of the chaincode to deploy: javascript (default), typescript"
   echo "    -v <version>  - chaincode version. Must be a round number, 1, 2, 3, etc"
   echo "    -s <sequence>  - chaincode sequence. Must be a round number, 1, 2, 3, etc"
+  echo "    -i <init chaincode> - specify 'NA' if the init function of the smartcontract is not required"
   echo "    -verbose - verbose mode"
   echo "  network.sh -h (print this message)"
   echo
@@ -29,7 +30,7 @@ function printHelp() {
   echo "  network.sh up"
   echo "  network.sh up createChannels"
   echo "  network.sh createChannels"
-  echo "  network.sh deployCCs -n -l -v -r -d -verbose"
+  echo "  network.sh deployCCs -n -l -v -r -d -i -verbose"
   echo
   echo
   echo " Examples:"
@@ -327,6 +328,10 @@ while [[ $# -ge 1 ]] ; do
     ;;
   -s )
     CC_SEQUENCE="$2"
+    shift
+    ;;
+  -i )
+    CC_INIT_FCN="$2"
     shift
     ;;
   -verbose )

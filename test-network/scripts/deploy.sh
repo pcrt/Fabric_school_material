@@ -247,6 +247,9 @@ CHANNEL_NAME="quotationchannel1"
 infoln "Deploy into channel $CHANNEL_NAME"
 ## approve the definition for org1
 approveForMyOrg 1
+## check whether the chaincode definition is ready to be committed
+checkCommitReadiness 1 "\"SupplierAMSP\": true" "\"AgencyMSP\": false"
+checkCommitReadiness 3 "\"SupplierAMSP\": true" "\"AgencyMSP\": false"
 ## now approve also for org3
 approveForMyOrg 3
 ## check whether the chaincode definition is ready to be committed
@@ -269,6 +272,9 @@ CHANNEL_NAME="quotationchannel2"
 infoln "Deploy into channel $CHANNEL_NAME"
 ## approve the definition for org2
 approveForMyOrg 2
+## check whether the chaincode definition is ready to be committed
+checkCommitReadiness 2 "\"SupplierBMSP\": true" "\"AgencyMSP\": false"
+checkCommitReadiness 3 "\"SupplierBMSP\": true" "\"AgencyMSP\": false"
 ## now approve also for org3
 approveForMyOrg 3
 ## check whether the chaincode definition is ready to be committed
