@@ -102,7 +102,7 @@ function networkDown() {
 
   # remove channel and script artifacts
   # rm -rf test-network/choreographycontract.tar.gz
-  rm -rf test-network/channel-artifacts test-network/log.txt chaincode/identity
+  rm -rf test-network/channel-artifacts test-network/log.txt
 }
 
 # Install the Hyperledger Fabric platform-specific binaries and config files for 
