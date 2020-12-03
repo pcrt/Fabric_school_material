@@ -109,7 +109,7 @@ setGlobals 3
 #provideQuotation
 #getQuotation
 #requestQuotation
-getQuotation
-#acceptQuotation
+#getQuotation
+acceptQuotation
 
 exit 0
