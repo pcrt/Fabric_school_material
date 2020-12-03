@@ -248,6 +248,8 @@ function invokeCC() {
   exit 0
 }
 
+
+
 # Obtain the OS and Architecture string that will be used to select the correct
 # native binaries for your platform, e.g., darwin-amd64 or linux-amd64
 OS_ARCH=$(echo "$(uname -s | tr '[:upper:]' '[:lower:]' | sed 's/mingw64_nt.*/windows/')-$(uname -m | sed 's/x86_64/amd64/g')" | awk '{print tolower($0)}')
@@ -371,6 +373,9 @@ elif [ "$MODE" == "deployCCs" ]; then
 elif [ "$MODE" == "invokeCC" ]; then
   echo "invoking quotation smartcontract transaction"
   echo
+elif [ "$MODE" == "down" ]; then
+  echo "Stopping network"
+  echo
 else
   printHelp
   exit 1
@@ -384,6 +389,8 @@ elif [ "${MODE}" == "deployCCs" ]; then
   deployCCs
 elif [ "${MODE}" == "invokeCC" ]; then
   invokeCC
+elif [ "${MODE}" == "down" ]; then
+  networkDown
 else
   printHelp
   exit 1
