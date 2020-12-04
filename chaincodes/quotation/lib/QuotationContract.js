@@ -5,78 +5,111 @@ const { Contract } = require('fabric-contract-api')
 class QuotationContract extends Contract {
 
 	async initLedger(ctx) {
-        const quotations = [
-            /** example of quotation in requested state (initial state): 
-             *  the Agency has requested a quotation 
-             **/
-            {
+	// example of quotation in requested state (initial state): 
+        // the Agency has requested a quotation 
+        const quotation={
                 ID: 'quotation1',
-                type: 'shoes', 
-                price: null,
-                issuer: null,
-                quantity: 100,
-                state: 'requested'
+                Type: 'shoes', 
+                Price: null,
+                Issuer: null,
+                Quantity: 100,
+                State: 'requested'
             }
-            /**
-             * Other examples: 
-             * created state (intermediate state): 
-             * the SupplierA has provided the quotation 
-             *
-             * accepted state (final state): 
-             * the Agency has accepted the quotation of SupplierB
-             *
-             * accepted state (final state): 
-             *  the Agency has rejected the quotation of SupplierA
-             **/
-        ]
-
-        for(const quotation of quotations) {
-            const key = ctx.stub.createCompositeKey('quotations', [quotation.ID, quotation.type])
-            await ctx.stub.putState(key, Buffer.from(JSON.stringify(quotation)))
+            /*
+              Other quotation states: 
+              created state (intermediate state): 
+              the Supplier A or B has provided the quotation 
+             
+              accepted state (final state): 
+              the Agency has accepted the quotation of SupplierB
+             
+              rejected state (final state): 
+              the Agency has rejected the quotation of SupplierA
+            */
+        
+	    /* pushing the quotation to the ledger
+	       the putState function uses the quotation ID as key and
+	       the quotation object as value to be stored
+	    */
+            await ctx.stub.putState(quotation.ID, Buffer.from(JSON.stringify(quotation)))
             console.info(`INFO: Quotation ${quotation.ID} initialized`)
         }
-    }
-
-    async getQuotations(ctx, type) {
-        const iterator = await ctx.stub.getStateByPartialCompositeKey('quotations', [type])
-        const data = await this.getAllResults(iterator)
-        console.log("PIPPOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
-        console.log(data)
-        return data
+    
+    
+  
+    //Function for getting back a specific quotation from the ledger
+    //quotationID: the id of the quotation to get
+    async getQuotation(ctx, quotationID) {
+        const quotation = await ctx.stub.getState(quotationID)
+        if (!quotation || quotation.length === 0) {
+            throw new Error(`The quotation ${id} does not exist`)
+        }
+        console.info(`Quotation key:   ${quotation.ID}`)
+        console.info(`Quotation value: ${quotation}`)
+        return JSON.stringify(quotation.toString())
     }
 
     /** tx submitter: Agency */
     async requestQuotation(ctx, id, type, quantity) {
-        const quotation = {
+    if(!(ctx.stub.getCreator().mspid.includes('Agency'))){
+    	     throw new Error(`Only the agency can request a quotation`)
+    	}
+        const newQuotation = {
             ID: id,
-            type: type,
-            price: null,
-            issuer: null,
-            quantity: quantity,
-            state: 'requested'
+            Type: type,
+            Price: null,
+            Issuer: null,
+            Quantity: quantity,
+            State: 'requested'
         }
-        const key = ctx.stub.createCompositeKey('quotations', [quotation.ID, quotation.type])
-        ctx.stub.putState(key, Buffer.from(JSON.stringify(quotation)))
-        return JSON.stringify(quotation)
+        await ctx.stub.putState(id, Buffer.from(JSON.stringify(newQuotation)))
+        console.info(`New quotation request ${newQuotation.ID} inserted`)
+        return JSON.stringify(newQuotation)
+    }
+    
+    async provideQuotation(ctx, id, newPrice){
+    	if(!(ctx.stub.getCreator().mspid.includes('Supplier'))){
+    	     throw new Error(`Only the supplier can provide a quotation`)
+    	}
+    	const quotation = await ctx.stub.getState(id)
+    	if (!quotation || quotation.length === 0) {
+            throw new Error(`The quotation ${id} does not exist`)
+        }
+    	
+    	const quotationProvided={
+                ID: id,
+                Type: 'shoes', 
+                Price: newPrice,
+                Issuer: JSON.stringify(ctx.stub.getCreator().mspid),
+                Quantity: 100,
+                State: 'provided'
+            }
+   
+    	await ctx.stub.putState(id, Buffer.from(JSON.stringify(quotationProvided)))
+    	return JSON.stringify(quotationProvided.toString())
+    }
+    
+    async acceptQuotation(ctx, quotationID, newState){
+    	if(!(ctx.stub.getCreator().mspid.includes('Agency'))){
+    	     throw new Error(`Only the agency can update a quotation`)
+    	}
+    	const quotationJSON = await ctx.stub.getState(quotationID)
+    	const quotationString = quotationJSON.toString()
+    	const quotation = JSON.parse(quotationString)
+    	quotation.State = newState
+    	await ctx.stub.putState(quotationID, Buffer.from(JSON.stringify(quotation)))
+    	return JSON.stringify(quotation)
+    }
+    
+    async deleteLedger(ctx, id){
+    	const quotation = await ctx.stub.getState(id)
+    	if (!quotation || quotation.length === 0) {
+            throw new Error(`The quotation ${id} does not exist`)
+        }
+    	return ctx.stub.deleteState(id.toString());
     }
 
-    async getAllResults(iterator) {
-        const allResults = []
-        while (true) {
-            const res = await iterator.next()
-            if (res.value) {
-                // if not a getHistoryForKey iterator then key is contained in res.value.key
-                allResults.push(res.value.value.toString('utf8'))
-            }
     
-            // check to see if we have reached then end
-            if (res.done) {
-                // explicitly close the iterator            
-                await iterator.close()
-                return allResults
-            }
-        }
-    }
 
 }
 

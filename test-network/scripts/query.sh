@@ -111,15 +111,13 @@ setGlobals 3
 }
 
 
-#getQuotation
 
-#getQuotation
 #provideQuotation
 acceptQuotation
 getQuotation 1 1
 getQuotation 2 2
 #requestQuotation
-#getQuotation
+
 
 
 exit 0
