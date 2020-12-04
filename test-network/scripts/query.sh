@@ -44,7 +44,7 @@ requestQuotation() {
   successln "invoke transaction 'requestQuotation' success"
 }
 
-getQuotation(){
+getQuotation() {
   # 1 = SupplierA, 2 = SupplierB, 3 = Agency
   IDENTITY=$1
   CHANNEL=$2
@@ -72,8 +72,8 @@ getQuotation(){
   successln "invoke transaction 'getQuotation' success"
 }
 
-provideQuotation(){
-setGlobals 1
+provideQuotation() {
+  setGlobals 1
 
   local ORDERER=localhost:7050
   local PEER0_ORG1=localhost:7051   # SupplierA
@@ -90,10 +90,9 @@ setGlobals 1
   successln "invoke transaction 'provideQuotation' success"
 }
 
-acceptQuotation(){
-
-# 1 = SupplierA, 2 = SupplierB, 3 = Agency
-setGlobals 3
+acceptQuotation() {
+  # 1 = SupplierA, 2 = SupplierB, 3 = Agency
+  setGlobals 3
 
   local ORDERER=localhost:7050
   local PEER0_ORG1=localhost:7051   # SupplierA
@@ -113,9 +112,9 @@ setGlobals 3
 
 
 #provideQuotation
-acceptQuotation
+#acceptQuotation
 getQuotation 1 1
-getQuotation 2 2
+#getQuotation 2 2
 #requestQuotation
 
 
