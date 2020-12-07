@@ -11,7 +11,7 @@ const identity = 'Agency'
 const walletPath = path.resolve(__dirname, `/home/winterschool20/Desktop/Winter_school/Fabric_school_material/test-network/${identity}/wallet`)
 
 let finalConnection = {}
-
+let contract = {}
 class test {
 
     constructor() {}
@@ -90,10 +90,30 @@ class test {
                 //get and connect to the channel where the caincode is deployed
                 const network = await gateway.getNetwork('quotationchannel1');
                 //get the smart contract from the network
-                const contract = await network.getContract('quotation');
+                contract = await network.getContract('quotation');
                 let resp = null
-            
-        //submit transaction
+                let listener = async (event) => {
+		
+			const asset = JSON.parse(event.payload.toString());
+			
+			console.log(`-- Contract Event Received: ${event.eventName} - ${JSON.stringify(asset.data)}`);
+			
+			console.log(`*** Event: ${event.eventName}:${asset.ID}`);
+			
+			const eventTransaction = event.getTransactionEvent();
+			console.log(`*** transaction: ${eventTransaction.transactionId} status:${eventTransaction.status}`);
+		
+			const eventBlock = eventTransaction.getBlockEvent();
+			console.log(`*** block: ${eventBlock.blockNumber.toString()}`);
+		};
+		// now start the client side event service and register the listener
+		console.log(`--> Start contract event stream to peer in Org1`);
+		await contract.addContractListener(listener);
+		//test query
+            	const resultBuffer = await contract.evaluateTransaction('getQuotation','quotation1');
+            	
+            	console.log(JSON.parse(resultBuffer.toString('utf8')));
+       	 //submit transaction
                 if(!transactionParams || transactionParams === '')
                     resp = await contract.submitTransaction('getQuotation');
                 else
@@ -101,6 +121,7 @@ class test {
                 
                 gateway.disconnect();
                 console.log(resp.toString())
+                contract.removeContractListener(listener);
         
             } catch (err) {
                 console.log(err)
