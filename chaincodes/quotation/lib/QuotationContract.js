@@ -48,8 +48,8 @@ class QuotationContract extends Contract {
         }
         console.info(`Quotation key:   ${quotation.ID}`)
         console.info(`Quotation value: ${quotation}`)
-        const quotationBuffer = Buffer.from(JSON.stringify(quotation));
-        ctx.stub.setEvent('getQuotation', quotationBuffer); 	 
+
+        ctx.stub.setEvent('getQuotation', quotation)
         return JSON.stringify(quotation.toString())
     }
 

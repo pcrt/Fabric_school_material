@@ -107,7 +107,7 @@ class test {
             const listener = async (event) => {
                 const asset = JSON.parse(event.payload.toString())
 			
-			    console.log(`-- Contract Event Received: ${event.eventName} - ${JSON.stringify(asset.data)}`)
+			    console.log(`-- Contract Event Received: ${event.eventName} - ${JSON.stringify(asset)}`)
 			
 			    console.log(`*** Event: ${event.eventName}:${asset.ID}`)
 			
