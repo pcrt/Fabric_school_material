@@ -12,7 +12,7 @@ let connProfiles = {
 
 let finalConnection = {}
 
-class test {
+class FabNetwork {
 
     constructor() {}
 
@@ -136,6 +136,8 @@ class test {
             gateway.disconnect()
             console.log(resp.toString())
             contract.removeContractListener(listener)
+
+            return resp
         
         } catch (err) {
             console.log(err)
@@ -144,7 +146,8 @@ class test {
 
 }
 
-const main = async () => {
+// TEST
+/*const main = async () => {
     try {
         const identity = 'Agency'
         const organization = 'agency.quotation.com'
@@ -153,15 +156,13 @@ const main = async () => {
         const transactionName = 'getQuotation'
         const transactionParams = ['quotation1']  // array containing the parameters to pass to the smart contract function
 
-        await test.createIdentity(identity, organization, orgMspId)
-        await test.createConnection(identity, organization)
-        await test.submitT(channel, transactionName, transactionParams)
+        await FabNetwork.createIdentity(identity, organization, orgMspId)
+        await FabNetwork.createConnection(identity, organization)
+        await FabNetwork.submitT(channel, transactionName, transactionParams)
     } catch (error) {
         console.log(error)
     }
 }
-main()
+main()*/
 
-
-
-
+module.exports = FabNetwork

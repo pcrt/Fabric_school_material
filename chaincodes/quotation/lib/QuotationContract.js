@@ -44,7 +44,7 @@ class QuotationContract extends Contract {
     async getQuotation(ctx, quotationID) {
         const quotation = await ctx.stub.getState(quotationID)
         if (!quotation || quotation.length === 0) {
-            throw new Error(`The quotation ${id} does not exist`)
+            throw new Error(`The quotation ${quotationID} does not exist`)
         }
         console.info(`Quotation key:   ${quotation.ID}`)
         console.info(`Quotation value: ${quotation}`)
