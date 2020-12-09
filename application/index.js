@@ -25,7 +25,7 @@ class test {
      */
     static async createIdentity(walletIdentity, organization, orgMspId) {
         try {
-            const walletPath = path.resolve(__dirname, `../test-network/${walletIdentity}/wallet`)
+            const walletPath = path.resolve(__dirname, `./identities/${walletIdentity}/wallet`)
             //create new wallet
             const wallet = await Wallets.newFileSystemWallet(walletPath)
             //get identity from wallet
@@ -59,7 +59,7 @@ class test {
      */
     static async createConnection(walletIdentity, organization) {
         try {
-            const walletPath = path.resolve(__dirname, `../test-network/${walletIdentity}/wallet`)
+            const walletPath = path.resolve(__dirname, `./identities/${walletIdentity}/wallet`)
             const wallet = await Wallets.newFileSystemWallet(walletPath)
 
             //get the connection profile file
