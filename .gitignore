@@ -15,3 +15,4 @@
 .DS_Store
 /chaincode/node_modules
 /test-network/*.tar.gz
+/application/node_modules
