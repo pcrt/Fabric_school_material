@@ -31,7 +31,7 @@ class test {
             //get identity from wallet
             const userExists = await wallet.get(walletIdentity)
             if (userExists) {
-                console.log(`WARN: An identity for the client user "${identity}" already exists in the wallet`)
+                console.log(`WARN: An identity for the client user "${walletIdentity}" already exists in the wallet`)
             }
             //get credentials (certificate and private key) from the peer organization folder
             organization = organization.toLowerCase()
