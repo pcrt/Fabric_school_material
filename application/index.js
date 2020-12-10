@@ -128,10 +128,12 @@ class FabNetwork {
 
             // submit transaction
             let resp = null
-            if(!transactionParams || transactionParams === '')
+            if(!transactionParams || transactionParams === '') {
                 resp = await contract.submitTransaction(transactionName)
-            else
-                resp = await contract.submitTransaction(transactionName, transactionParams)
+            }
+            else {
+                resp = await contract.submitTransaction(transactionName, ...transactionParams)
+            }
                 
             gateway.disconnect()
             console.log(resp.toString())

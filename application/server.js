@@ -1,23 +1,26 @@
 const express = require('express')
 const app = express()
+const bodyParser = require('body-parser')
 const port = 3000
 const FabNetwork = require('./index.js')
 
-app.get('/createIdentity', async (req, res) => {
-    //const { identity, organization, msp, channel, txName, txParams } = req.query // TODO
+app.use(express.static('public'))
+app.use(bodyParser())
 
-    const identity = 'Agency'
-    const organization = 'agency.quotation.com'
-    const msp = 'AgencyMSP'
-    const channel = 'quotationchannel1'
-    const txName = 'getQuotation'
-    const txParams = ['quotation1']
+app.post('/submitTX', async (req, res) => {
+    const data = req.body
+    const identity = data.identity
+    const organization = data.organization
+    const msp = data.msp
+    const channel = data.channel
+    const txName = data.txName
+    const txParams = data.txParams
 
     await FabNetwork.createIdentity(identity, organization, msp)
     await FabNetwork.createConnection(identity, organization)
-    const data = await FabNetwork.submitT(channel, txName, txParams)
+    const resultTx = await FabNetwork.submitT(channel, txName, txParams)
 
-    res.send(data)
+    res.send(resultTx)
 })
 
 app.listen(port, () => {

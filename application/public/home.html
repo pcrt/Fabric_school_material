@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+<head>
+    <title>Fabric Winter School</title>
+</head>
+<style>
+    .container{
+        text-align: center;
+        padding-right: 100px;
+    }
+</style>
+<body>
+    <div class="container">
+        Identity: <input id="identity" value="Agency"></input> </br></br>
+        Organization: <input id="organization" value="agency.quotation.com"></input> </br></br>
+        MSP ID: <input id="msp" value="AgencyMSP"></input> </br></br>
+        Channel: <input id="channel" value="quotationchannel1"></input> </br></br>
+        Transaction Name: <input id="txName" value="getQuotation"></input> </br></br>
+        Transaction Params: <input id="txParams" value="quotation1"></input> </br></br>
+        <button id="sendTxBtn" type="button">Send TX</button>
+    </div>
+    
+    <script>
+        document.getElementById("sendTxBtn").addEventListener("click", (e) => {
+            var identity = document.getElementById("identity").value
+            if(!identity) {
+                alert("'Identity' field missing!")
+                return
+            }
+
+            var organization = document.getElementById("organization").value
+            if(!organization) {
+                alert("'Organization' field missing!")
+                return
+            }
+
+            var msp = document.getElementById("msp").value
+            if(!msp) {
+                alert("'MSP ID' field missing!")
+                return
+            }
+
+            var channel = document.getElementById("channel").value
+            if(!channel) {
+                alert("'Channel' field missing!")
+                return
+            }
+
+            var txName = document.getElementById("txName").value
+            if(!txName) {
+                alert("'Transaction Name' field missing!")
+                return
+            }
+
+            var txParams = document.getElementById("txParams").value
+            if(!txParams) {
+                alert("'Transaction Params' field missing!")
+                return
+            }
+
+            var paramsArr = []
+            txParams = txParams.split(',')
+            txParams.forEach(p => {
+                paramsArr.push(p)
+            })
+
+            var xhr = new XMLHttpRequest()
+            xhr.open("POST", "http://localhost:3000/submitTX", true)
+            xhr.setRequestHeader('Content-Type', 'application/json')
+            xhr.send(JSON.stringify({
+                identity,
+                organization,
+                msp,
+                channel,
+                txName,
+                txParams: paramsArr
+            }))
+        })
+    </script>
+
+</body>
+</html>
