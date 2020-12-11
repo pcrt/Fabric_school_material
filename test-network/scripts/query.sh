@@ -11,17 +11,17 @@ invokeFunction() {
   IDENTITY=$1
   CHANNEL=$2
   FUNCTION_NAME=$3
-  PARAMETERS=$4
+  formatParams $@
   setGlobals ${IDENTITY}
   
   local ORDERER=localhost:7050
   local PEER0_ORG3=localhost:11051  # Agency
   local NAME_CC=quotation
   local CHANNEL="quotationchannel"${CHANNEL}
-  #local TX='{"Args":["'${FUNCTION_NAME}'","'${PARAMETERS}'"]}'
-  local TX='{"Args":["'${FUNCTION_NAME}'","quotation1","50"]}'
-  	set -x
+  #local TX='{"Args":["'${FUNCTION_NAME}'","quotation1","50"]}'
+  local TX='{"Args":["'${FUNCTION_NAME}'",'${PARAMS}']}'
   
+  set -x
   case $1 in
   1)
   	local PEER0_ORG1=localhost:7051   # SupplierB 7051 per suppliera 9051 per B
@@ -57,7 +57,7 @@ provideQuotation() {
 
 
 
-invokeFunction 1 1 provideQuotation
+invokeFunction 1 1 provideQuotation "quotation1" "50"
 invokeFunction 3 1 getQuotation "quotation1"
 
 

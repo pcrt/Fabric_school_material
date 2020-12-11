@@ -55,9 +55,6 @@ setGlobals() {
   fi
 }
 
-# ===================================================================================================
-# TODO REFACTORING FOR DEPLOY
-# ===================================================================================================
 # parsePeerConnectionParameters $@
 # Helper function that takes the parameters from a chaincode operation
 # (e.g. invoke, query, instantiate) and checks for an even number of
@@ -82,7 +79,18 @@ parsePeerConnectionParameters() {
   # remove leading space for output
   PEERS="$(echo -e "$PEERS" | sed -e 's/^[[:space:]]*//')"
 }
-# ===================================================================================================
+
+formatParams() {
+    shift
+    shift
+    shift
+    PARAMS=\"$1\"
+    shift
+    while [ "$#" -gt 0 ]; do
+        PARAMS=$PARAMS,\"$1\"
+        shift
+    done
+}
 
 verifyResult() {
   if [ $1 -ne 0 ]; then
