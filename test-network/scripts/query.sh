@@ -24,10 +24,10 @@ invokeFunction() {
   set -x
   case $1 in
   1)
-  	local PEER0_ORG1=localhost:7051   # SupplierB 7051 per suppliera 9051 per B
+  	local PEER0_ORG1=localhost:7051   # SupplierB 7051 - suppliera 9051 
   	peer chaincode invoke -o $ORDERER --tls true --cafile $ORDERER_CA -C $CHANNEL -n $NAME_CC --peerAddresses $PEER0_ORG1 --tlsRootCertFiles $PEER0_ORG1_CA --peerAddresses $PEER0_ORG3 --tlsRootCertFiles $PEER0_ORG3_CA -c $TX;;
   2)
-  	local PEER0_ORG2=localhost:9051   # SupplierB 7051 per suppliera 9051 per B
+  	local PEER0_ORG2=localhost:9051    # SupplierB 7051 - suppliera 9051 
   	peer chaincode invoke -o $ORDERER --tls true --cafile $ORDERER_CA -C $CHANNEL -n $NAME_CC --peerAddresses $PEER0_ORG2 --tlsRootCertFiles $PEER0_ORG2_CA --peerAddresses $PEER0_ORG3 --tlsRootCertFiles $PEER0_ORG3_CA -c $TX;;
    esac
    res=$?
@@ -57,7 +57,7 @@ provideQuotation() {
 
 
 
-invokeFunction 1 1 provideQuotation "quotation1" "50"
+#invokeFunction 1 1 provideQuotation "quotation1" "50"
 invokeFunction 3 1 getQuotation "quotation1"
 
 

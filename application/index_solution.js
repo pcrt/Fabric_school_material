@@ -27,9 +27,9 @@ class FabNetwork {
         try {
             const walletPath = path.resolve(__dirname, `./identities/${walletIdentity}/wallet`)
             //create new wallet
-            ...
+            const wallet = await Wallets.newFileSystemWallet(walletPath)
             //get identity from wallet
-            ...
+            const userExists = await wallet.get(walletIdentity)
             if (userExists) {
                 console.log(`WARN: An identity for the client user "${walletIdentity}" already exists in the wallet`)
             }
@@ -39,11 +39,13 @@ class FabNetwork {
             const certificate = fs.readFileSync(path.join(credPath, `/msp/signcerts/User1@${organization}-cert.pem`)).toString()
             const privateKey = fs.readFileSync(path.join(credPath, '/msp/keystore/priv_sk')).toString()
             
-            //create x.509 certificate
-            ...
-		
-	     //put hte identity in the wallet
-            await ...
+            const identity = {
+                credentials: { certificate, privateKey },
+                mspId: orgMspId,
+                type: 'X.509'
+            }
+
+            await wallet.put(walletIdentity, identity)
         } catch (err) {
             console.log(err)
         }
@@ -66,7 +68,15 @@ class FabNetwork {
             const connectionProfile = yaml.safeLoad(fs.readFileSync(connOrgPath, 'utf8'))
 
             //create connection option object
-            ...
+            const connectionOptions = {
+                identity: walletIdentity,
+                wallet: wallet,
+                discovery: { enabled: true, asLocalhost: true },
+                eventHandlerOptions: {
+                    // if strategy set to null, it will not wait for any commit events to be received from peers
+                    strategy: DefaultEventHandlerStrategies.MSPID_SCOPE_ALLFORTX
+                }
+            }
 
             // save connection profile and option in global object 
             finalConnection = { connectionProfile, connectionOptions }
@@ -90,9 +100,9 @@ class FabNetwork {
             await gateway.connect(finalConnection.connectionProfile, finalConnection.connectionOptions)
                 
             // get and connect to the channel where the caincode is deployed
-            ...
-            // get the chaincode (quotation) from the network
-            ...
+            const network = await gateway.getNetwork(channel)
+            // get the smart contract from the network
+            const contract = await network.getContract('quotation')
 
             const listener = async (event) => {
                 const asset = JSON.parse(event.payload.toString())
@@ -112,7 +122,7 @@ class FabNetwork {
 		    console.log(`--> Start contract event stream to peer in Org1`)
             await contract.addContractListener(listener)
 
-            // test query
+		    // test query
             // const resultBuffer = await contract.evaluateTransaction(transactionName,'quotation1')
             // console.log(JSON.parse(resultBuffer.toString('utf8')))
 
@@ -155,6 +165,6 @@ class FabNetwork {
         console.log(error)
     }
 }
-*/
+main()*/
 
 module.exports = FabNetwork
